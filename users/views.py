@@ -14,7 +14,7 @@ def user_register(request):
         if form.is_valid():
             user = form.save()
             login(request,user)
-            messages.success(request,f"Registered as {user.username}, UserType: {user.user_type} Successfully!")
+            messages.success(request,f"Registered as {user.username}, UserType: {user.user_types} Successfully!")
             return redirect('login')
         else:
             messages.error(request,'There was an error with your registration')
