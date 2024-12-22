@@ -29,6 +29,8 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost').split(',')
 
+AUTH_USER_MODEL = 'users.CustomUser'
+
 
 # Application definition
 

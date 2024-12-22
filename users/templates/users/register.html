@@ -3,6 +3,9 @@
 
 {% block content %}
     <main class="register-container">
-        <h1>Register</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+        </form>
     </main>
 {% endblock %}
