@@ -36,3 +36,7 @@ class CustomUserForm(UserCreationForm):
             raise ValidationError('Password must contain atleast one special character')
         if not re.search(r'[a-z]',password):
             raise ValidationError('Password must contain atleast one lowercase letter')
+
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(max_length=254,widget=forms.TextInput(attrs={'placeholder':'Enter your username'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'Enter your password'}))
