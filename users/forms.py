@@ -5,8 +5,16 @@ from django.core.exceptions import ValidationError
 import re
 
 class CustomUserForm(UserCreationForm):
-    email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'placeholder':'Enter your email address'}),help_text="Enter a valid email address")
-    user_type = forms.ChoiceField(choices=CustomUser.USER_TYPE_CHOICES,label='Account',help_text="Select the type of account you want to create")
+    email = forms.EmailField(required=True,widget=forms.EmailInput(attrs={'placeholder':'Enter your email address'}))
+    user_type = forms.ChoiceField(choices=CustomUser.USER_TYPE_CHOICES,label='Account')
+
+    
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': "Enter your username"}))
+
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': "Enter your Password"}))
+    
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': "Confirm your Password"}))
+    
 
     class Meta:
         model = CustomUser
