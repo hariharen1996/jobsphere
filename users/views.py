@@ -14,7 +14,7 @@ def user_login(request):
             print(user.user_type)
             if user is not None:
                 login(request,user)
-                messages.success(request,f"LoggedIn Successfully. Welcome {user.username}")
+                messages.success(request,f"LoggedIn Successfully.")
                 return redirect('job_home')
             else:
                 messages.error(request,f"Invalid username or password")
@@ -30,10 +30,8 @@ def user_register(request):
         if form.is_valid():
             user = form.save()
             login(request,user)
-            messages.success(request,f"Registered Successfully as {user.username}, UserType: {user.user_type}")
+            messages.success(request,f"Registered Successfully.")
             return redirect('login')
-        else:
-            messages.error(request,'There was an error with your registration')
     else:
         form = CustomUserForm()
     return render(request,'users/register.html',{'title': 'RegisterPage','form':form})

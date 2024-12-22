@@ -69,13 +69,17 @@ body::after{
 }
 
 .main-title{
-    margin-left: 1rem;
-    width: 700px;
+    width: 600px;
 }
 
 .pop{
     display: inline-block;
     animation: pop 10s infinite;
+}
+
+.message{
+    position: absolute;
+    top: 15%;
 }
 
 @keyframes pop{
@@ -93,5 +97,12 @@ body::after{
     }
     100%{
         transform: translateY(0);
+    }
+}
+
+@media screen and (min-width:556px){
+    .message{
+        left: 50%;
+        transform: translateX(-50%);
     }
 }

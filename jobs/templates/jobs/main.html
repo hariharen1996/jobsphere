@@ -94,17 +94,23 @@
     {% if messages %}
     <div class="alert-container">
       {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} mt-3">
+      <div class="alert alert-{{ message.tags }} message">
         {{ message }}
       </div>
       {% endfor %}
     </div>
+
     {% endif %}
     <div class="content">
       {% block content %} {% endblock %}
     </div>
   </div>
   {% bootstrap_javascript %}
+
+  {% block scripts %}
+  <script src="{% static 'jobs/js/main.js' %}"></script>
+  {% endblock %}
+
 </body>
 
 </html>
