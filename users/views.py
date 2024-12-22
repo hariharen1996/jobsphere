@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from .forms import CustomUserForm,LoginForm
-from django.contrib.auth import login,authenticate
+from django.contrib.auth import login,authenticate,logout
 from django.contrib import messages
 
 # Create your views here.
@@ -11,15 +11,13 @@ def user_login(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(request,username=username,password=password)
-
+            print(user.user_type)
             if user is not None:
                 login(request,user)
-                messages.success(request,f"Login Successfull. Welcome {user.username}")
+                messages.success(request,f"LoggedIn Successfully. Welcome {user.username}")
                 return redirect('job_home')
             else:
                 messages.error(request,f"Invalid username or password")
-        else:
-            messages.error(request,'There was an error with your login')
     else:
         form = LoginForm()
     
@@ -32,7 +30,7 @@ def user_register(request):
         if form.is_valid():
             user = form.save()
             login(request,user)
-            messages.success(request,f"Registered as {user.username}, UserType: {user.user_types} Successfully!")
+            messages.success(request,f"Registered Successfully as {user.username}, UserType: {user.user_type}")
             return redirect('login')
         else:
             messages.error(request,'There was an error with your registration')
@@ -40,3 +38,7 @@ def user_register(request):
         form = CustomUserForm()
     return render(request,'users/register.html',{'title': 'RegisterPage','form':form})
 
+def user_logout(request):
+    logout(request)
+    messages.warning(request,f"You have been logged out!😕")
+    return redirect('login')

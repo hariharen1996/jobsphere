@@ -70,7 +70,7 @@ body::after{
 
 .main-title{
     margin-left: 1rem;
-    width: 500px;
+    width: 700px;
 }
 
 .pop{
@@ -93,11 +93,5 @@ body::after{
     }
     100%{
         transform: translateY(0);
-    }
-}
-
-@media screen and (min-width:768px){
-    .main-title{
-        margin-left: 2rem;
     }
 }

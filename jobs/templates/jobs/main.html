@@ -3,77 +3,108 @@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% if title %}
-        <title>JobSphere | {{ title }}</title>
-    {% else %}
-        <title>JobSphere</title>
-    {% endif %}        
-    
-    {% bootstrap_css %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% if title %}
+  <title>JobSphere | {{ title }}</title>
+  {% else %}
+  <title>JobSphere</title>
+  {% endif %}
 
-    <link rel="stylesheet" type="text/css" href="{% static 'jobs/css/styles.css' %}" />
+  {% bootstrap_css %}
 
-    
+  <link rel="stylesheet" type="text/css" href="{% static 'jobs/css/styles.css' %}" />
+
+
 </head>
+
 <body>
-    <nav class="navbar navbar-expand-lg nav-border">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#">JobSphere</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul
-              class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex flex-row align-items-center gap-3 md:d-flex md:align-items-center gap-2">
-              <li class="nav-item">
-                <button class="btn btn-dark text-white">
-                  <a href="#" class="text-decoration-none text-white">Home</a>
-                </button>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
-                  <img src="https://t3.ftcdn.net/jpg/08/07/28/18/360_F_807281855_tf1GkaRzrFBnfFILz0q2GfU9cV5UiC8A.jpg" alt="user-profile" class="profile-img">
-                </a>
-              </li>
-            </ul>
+  <nav class="navbar navbar-expand-lg nav-border">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">JobSphere</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul
+          class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex flex-row align-items-center gap-3 md:d-flex md:align-items-center gap-2">
+          <li class="nav-item">
+            <button class="btn btn-dark text-white">
+              <a href="{% url 'job_home' %}" class="text-decoration-none text-white">Home</a>
+            </button>
+          </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <form action="{% url 'logout' %}" method="POST">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-dark text-white">
+                Logout
+              </button>
+            </form>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <button class="btn btn-dark text-white">
+              <a href="{% url 'login' %}" class="text-decoration-none text-white">Login</a>
+            </button>
+          </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+              <img src="https://t3.ftcdn.net/jpg/08/07/28/18/360_F_807281855_tf1GkaRzrFBnfFILz0q2GfU9cV5UiC8A.jpg"
+                alt="user-profile" class="profile-img">
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="profileModalLabel">Profile Information</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="profile-details d-flex align-items-center gap-2">
+            <img src="https://t3.ftcdn.net/jpg/08/07/28/18/360_F_807281855_tf1GkaRzrFBnfFILz0q2GfU9cV5UiC8A.jpg"
+              alt="user-profile" class="profile-img">
+            <div class="profile-content">
+              <p>Hari</p>
+              <p>hari@gmail.com</p>
+            </div>
           </div>
         </div>
-      </nav>
-    
-      <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="profileModalLabel">Profile Information</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <div class="profile-details d-flex align-items-center gap-2">
-                <img src="https://t3.ftcdn.net/jpg/08/07/28/18/360_F_807281855_tf1GkaRzrFBnfFILz0q2GfU9cV5UiC8A.jpg" alt="user-profile" class="profile-img">
-                <div class="profile-content">
-                    <p>Hari</p>
-                    <p>hari@gmail.com</p>
-                </div>
-              </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-dark">
-                <a href="#" class="text-decoration-none text-white">Edit Profile</a>
-              </button>
-            </div>
-          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-dark">
+            <a href="#" class="text-decoration-none text-white">Edit Profile</a>
+          </button>
         </div>
       </div>
-    
-    {% block content %} 
-    
-    {% endblock %}
+    </div>
+  </div>
 
-    {% bootstrap_javascript %}
+  <div class="container">
+    {% if messages %}
+    <div class="alert-container">
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} mt-3">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <div class="content">
+      {% block content %} {% endblock %}
+    </div>
+  </div>
+  {% bootstrap_javascript %}
 </body>
+
 </html>
