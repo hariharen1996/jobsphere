@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect
-from .forms import CustomUserForm,LoginForm
+from .forms import CustomUserForm,LoginForm,CustomUserUpdateForm,ProfileUpdateForm
 from django.contrib.auth import login,authenticate,logout
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def user_login(request):
@@ -40,3 +41,25 @@ def user_logout(request):
     logout(request)
     messages.warning(request,f"You have been logged out!😕")
     return redirect('login')
+
+@login_required
+def user_profile(request):
+    if request.method == 'POST':
+        user_form = CustomUserUpdateForm(request.POST,instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST,request.FILES,instance=request.user.profile)
+        
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request,f"Your profile has been updated")
+            return redirect('profile')
+    else:
+        user_form = CustomUserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=request.user.profile)
+
+    context = {
+        'user_form': user_form,
+        'profile_form':profile_form
+    }    
+
+    return render(request,"users/profile.html",context)

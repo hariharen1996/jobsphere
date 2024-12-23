@@ -54,8 +54,8 @@
           {% endif %}
           <li class="nav-item">
             <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
-              <img src="https://t3.ftcdn.net/jpg/08/07/28/18/360_F_807281855_tf1GkaRzrFBnfFILz0q2GfU9cV5UiC8A.jpg"
-                alt="user-profile" class="profile-img">
+              <img src="{{ user.profile.image.url }}"
+                alt="{{ user.username }}" class="profile-img">
             </a>
           </li>
         </ul>
@@ -72,18 +72,18 @@
         </div>
         <div class="modal-body">
           <div class="profile-details d-flex align-items-center gap-2">
-            <img src="https://t3.ftcdn.net/jpg/08/07/28/18/360_F_807281855_tf1GkaRzrFBnfFILz0q2GfU9cV5UiC8A.jpg"
-              alt="user-profile" class="profile-img">
+            <img src="{{ user.profile.image.url }}"
+              alt="{{ user.username }}" class="profile-img">
             <div class="profile-content">
-              <p>Hari</p>
-              <p>hari@gmail.com</p>
+              <p>{{ user.username }}</p>
+              <p>{{ user.email }}</p>
             </div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-dark">
-            <a href="#" class="text-decoration-none text-white">Edit Profile</a>
+            <a href="{% url 'profile' %}" class="text-decoration-none text-white">Edit Profile</a>
           </button>
         </div>
       </div>

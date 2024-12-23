@@ -82,6 +82,12 @@ body::after{
     top: 15%;
 }
 
+.user-img{
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+}
+
 @keyframes pop{
     0%{
         transform: translateY(0);
