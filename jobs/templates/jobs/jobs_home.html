@@ -1,11 +1,38 @@
 {% extends 'jobs/main.html' %}
+{% load static %}
 
 {% block content %}
-    <main class="home-container">
-        <div class="main-title">
-            <h1 class="lh-base fs-3">Step into Your Future with <span class="pop text-uppercase fw-bold">Jobsphere</span> Your Gateway to Top Careers</h1>
-            <p class="fs-5">Find your dream job now</p>
-            <button class="btn btn-dark">Profile</button>
-        </div>
-    </main>
+<main class="home-container">
+    <div class="main-title">
+        <h1 class="lh-base fs-3">Step into Your Future with <span class="pop text-uppercase fw-bold">Jobsphere</span>
+            Your Gateway to Top Careers</h1>
+        <p class="fs-5">Find your dream job now</p>
+        <button class="btn btn-dark" id="profileBtn">Profile</button>
+    </div>
+</main>
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+    const profileBtn = document.querySelector('#profileBtn')
+
+    profileBtn.addEventListener('click', function () {
+        const profileImage = document.querySelector('.profile-img')
+        const toggleNav = document.querySelector('.navbar-toggler')
+
+        profileImage.classList.add('highlight-profile-img')
+        
+        if(window.innerWidth < 992){
+            if(toggleNav.getAttribute('aria-expanded') === 'false'){
+                toggleNav.click()
+            }
+        }
+
+        setTimeout(function(){
+            profileImage.classList.remove('highlight-profile-img')
+            toggleNav.setAttribute('aria-expanded','true')
+        },5000)       
+    })
+</script>
 {% endblock %}
