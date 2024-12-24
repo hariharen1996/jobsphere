@@ -6,6 +6,10 @@ from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def user_login(request):
+    if request.user.is_authenticated:
+        return redirect('job_home')
+                
+
     if request.method == 'POST':
         form = LoginForm(request,data=request.POST)
         if form.is_valid():
@@ -26,13 +30,16 @@ def user_login(request):
 
 
 def user_register(request):
+    if request.user.is_authenticated:
+        return redirect('job_home')
+    
     if request.method == 'POST':
         form = CustomUserForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request,user)
             messages.success(request,f"Registered Successfully.")
-            return redirect('login')
+            return redirect('job_home')
     else:
         form = CustomUserForm()
     return render(request,'users/register.html',{'title': 'RegisterPage','form':form})
