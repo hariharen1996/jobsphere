@@ -51,12 +51,12 @@ class Skill(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser,on_delete=models.CASCADE)
     image = models.ImageField(default='default.jpg',upload_to='profile_pic')
-    bio = models.TextField(default="No bio available")
-    education = models.CharField(max_length=255,blank=False,null=False,default="Not Specified")
+    bio = models.TextField(default="I am Hari...")
+    education = models.CharField(max_length=255,blank=False,null=False,default="ABC institute of technology")
     cgpa = models.DecimalField(max_digits=4,decimal_places=2,default=0.0)
     work_experience = models.TextField(default="No work experince available")
     resume = models.FileField(upload_to='resumes/',default="resumes/default_resume.pdf")
-    location = models.CharField(max_length=255,default="Not Specified")
+    location = models.CharField(max_length=255,default="TamilNadu/Chennai")
     certification = models.ManyToManyField(Certification,related_name='profiles')
     skills = models.ManyToManyField(Skill)
 
