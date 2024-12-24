@@ -3,6 +3,7 @@ from .models import CustomUser,Profile,Skill,Certification
 from django import forms
 from django.core.exceptions import ValidationError
 import re
+from decimal import Decimal
 
 WIDGETS = {
     'username': {'placeholder': "Enter your username"},
@@ -130,6 +131,10 @@ class ProfileUpdateForm(forms.ModelForm):
         resume = self.cleaned_data.get('resume')
         if resume:
             profile.resume = resume 
+
+        cgpa = self.cleaned_data.get('cgpa')
+        if cgpa is not None:
+            profile.cgpa = cgpa    
         
         profile.save()
 
@@ -143,9 +148,11 @@ class ProfileUpdateForm(forms.ModelForm):
     
     def clean_cgpa(self):
         cgpa = self.cleaned_data.get('cgpa')
-        if cgpa and (cgpa < 0.0 and cgpa > 10.0):
-            raise forms.ValidationError('cgpa must be between 0.00 and 10.00')
-
+        if cgpa is not None:
+            if cgpa < Decimal('1.00') or cgpa > Decimal('10.0'):
+                raise forms.ValidationError('cgpa must be between 0.00 and 10.00')
+        return cgpa
+    
     def clean_resume(self):
         resume = self.cleaned_data.get('resume')
         if resume and not resume.name.endswith('.pdf'):
@@ -166,4 +173,12 @@ class ProfileUpdateForm(forms.ModelForm):
         return certifications
 
     def clean(self):
+        certifications = self.cleaned_data.get('certifications')
+        certification_name = self.cleaned_data.get('certification_name')
+        certification_image = self.cleaned_data.get('certification_image')
+        
+        if not certifications and (not certification_name or not certification_image):
+            raise forms.ValidationError('You must either select an existing certification or provide a new certification name and image.')
+
+
         return super().clean()

@@ -93,6 +93,11 @@ body::after{
     animation: img infinite ease-in-out forwards;
 }
 
+.cert-img{
+    height: 5rem;
+    object-fit: cover;
+}
+
 @keyframes img{
     0%{
         transform: scale(1);

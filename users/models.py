@@ -53,7 +53,7 @@ class Profile(models.Model):
     image = models.ImageField(default='default.jpg',upload_to='profile_pic')
     bio = models.TextField(default="I am Hari...")
     education = models.CharField(max_length=255,blank=False,null=False,default="ABC institute of technology")
-    cgpa = models.DecimalField(max_digits=4,decimal_places=2,default=0.0)
+    cgpa = models.DecimalField(max_digits=4,decimal_places=2,null=True,blank=True,default=0.0)
     work_experience = models.TextField(default="No work experince available")
     resume = models.FileField(upload_to='resumes/',default="resumes/default_resume.pdf")
     location = models.CharField(max_length=255,default="TamilNadu/Chennai")
