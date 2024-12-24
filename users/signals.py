@@ -18,4 +18,6 @@ def save_profile(sender,instance,**kwargs):
 
 @receiver(post_migrate)
 def create_existing_user_profile(sender,**kwargs):
-    CustomUser.objects.filter(profile__isnull=True).update(profile=None)        
+    user_profile = CustomUser.objects.filter(profile__isnull=True)
+    for user in user_profile:
+        Profile.objects.create(user=user)        
