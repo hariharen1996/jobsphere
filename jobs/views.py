@@ -5,3 +5,6 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def job_home(request):
     return render(request,'jobs/jobs_home.html',{'title':"jobs_home"})
+
+def dashboard(request):
+    return render(request,"jobs/dashboard.html",{'title':"job_dashboard"})

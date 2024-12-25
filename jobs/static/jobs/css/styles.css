@@ -98,6 +98,58 @@ body::after{
     object-fit: cover;
 }
 
+.filter-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.3);
+    width: 100%;
+    height: 100%;
+    transition: all 0.5s ease;
+    z-index: -1;
+    opacity: 0;
+}
+
+.filter-sidebar.show {
+    opacity: 1;
+    z-index: 100;
+}
+
+.filter-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    max-width: 300px;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    padding: 2rem;
+    transition: all 0.5s ease;
+    transform: translateX(-100%);
+    overflow: scroll;
+}
+
+.show .filter-container{
+    transform: translateX(0);
+}
+
+.filter-close {
+    position: absolute;
+    top: 2rem;
+    right: 1.2rem;
+    padding: 5px;
+    border-radius: 1rem;
+    width: 2rem;
+    cursor: pointer;
+}
+
+.filter-close:hover {
+    transform: scale(1.1);
+    transition: transform 0.5s ease;
+}
+
+
+
 @keyframes img{
     0%{
         transform: scale(1);
