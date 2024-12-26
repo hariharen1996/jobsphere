@@ -140,6 +140,12 @@
       </div>
 </div>
 
+<div class="card mt-3">
+  {% for employer in data %}  
+    <h1>{{ employer.company_location }}</h1>
+  {% endfor %}
+</div>
+
 {% endblock %}
 
 
