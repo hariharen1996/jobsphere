@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import EmployeeForm,JobForm
 from .models import Employer,Job
@@ -44,3 +44,8 @@ def create_job(request):
         form = JobForm()
     
     return render(request,'jobs/job_form.html',{'form':form})
+
+
+def job_details(request,id):
+    jobs = get_object_or_404(Job,id=id)
+    return render(request,'jobs/job_details.html',{'job':jobs})

@@ -9,7 +9,7 @@ class CustomUser(AbstractUser):
         ('Recruiter','Recruiter')
     )
 
-    user_type = models.CharField(max_length=20,choices=USER_TYPE_CHOICES)
+    user_type = models.CharField(max_length=20,choices=USER_TYPE_CHOICES,default='Applicant')
 
     def __str__(self):
         return self.username

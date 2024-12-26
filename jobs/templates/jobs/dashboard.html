@@ -142,38 +142,43 @@
         </div>
     </div>
 
-    <div class="job-container card p-4 mt-3">
-       {% for result in data %} 
-        <header class="d-flex justify-content-between align-items-center">
-                <div>  
+    <div class="job-container mt-3 mb-3">
+        {% for result in data %}
+      <div class="m-2 card p-3">  
+        <a href="{% url 'job_details' id=result.id %}" class="text-decoration-none text-dark">
+            <header class="d-flex justify-content-between align-items-center">
+                <div>
                     <h3 class="fw-bold fs-3">{{ result.employer.company_name }}</h3>
                     <p class="fs-5">{{ result.title }}</p>
                 </div>
-                <img src="{{ result.employer.company_logo.url }}" alt="{{ employer.company_name }}" class="company-logo" />
-        </header>
-       <article class="d-flex gap-4 flex-wrap">
-            <div>
-                <span class="ml-2"><i class="fas fa-suitcase"></i></span>
-                <span>{{ result.experience }}</span>
-            </div>
-            <div>
-                <span class="ml-2"><i class="fas fa-rupee-sign"></i></span>
-                <span>{{ result.salary_range }}</span>
-            </div>
-            <div>
-                <span class="ml-2"><i class="fas fa-map-marker-alt"></i></span>
-                <span>{{ result.location }}</span>
-            </div>
-       </article>
-       <article class="mt-2">
-            <p class="">{{ result.description|truncatechars:100 }}</p>
-            <div class="skills mt-2 d-flex gap-2 flex-wrap">
-                {% for skill in result.skills_required.all %}
+                <img src="{{ result.employer.company_logo.url }}" alt="{{ employer.company_name }}"
+                    class="company-logo" />
+            </header>
+            <article class="d-flex gap-4 flex-wrap">
+                <div>
+                    <span class="ml-2"><i class="fas fa-suitcase"></i></span>
+                    <span>{{ result.experience }} yrs</span>
+                </div>
+                <div>
+                    <span class="ml-2"><i class="fas fa-rupee-sign"></i></span>
+                    <span>{{ result.salary_range }}</span>
+                </div>
+                <div>
+                    <span class="ml-2"><i class="fas fa-map-marker-alt"></i></span>
+                    <span>{{ result.location }}</span>
+                </div>
+            </article>
+            <article class="mt-2">
+                <p class="">{{ result.description|truncatechars:100 }}</p>
+                <div class="skills mt-2 d-flex gap-2 flex-wrap">
+                    {% for skill in result.skills_required.all %}
                     <p class="text-secondary">{{ skill.name }} .</p>
-                {% endfor %}
-            </div>
-       </article>
-        {% endfor %} 
+                    {% endfor %}
+                </div>
+            </article>
+        </a>
+    </div>  
+        {% endfor %}
     </div>
 </main>
 {% endblock %}
