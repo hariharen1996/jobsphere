@@ -128,10 +128,23 @@
         </aside>
     </div>
 
-    <div class="filter-nav-btn mt-4 d-flex justify-content-end">
+    <div class="filter-nav-btn mt-4 d-flex gap-2 flex-wrap 
+    {% if user.user_type == 'Recruiter' %}
+        justify-content-center align-items-center
+    {% else %}
+        justify-content-end
+    {% endif %}">
         <button class="btn btn-primary" id="filter-open">
             <i class="fas fa-filter"></i>
         </button>
+      {% if user.user_type == 'Recruiter' %}  
+        <a href="{% url 'create_job' %}">
+            <button class="btn btn-primary">Create Job</button>
+        </a>
+        <a href="{% url 'create_employee' %}">
+            <button class="btn btn-primary">Create/update Employer</button>
+        </a> 
+       {% endif %} 
     </div>
 
     <div class="search-container mt-3">

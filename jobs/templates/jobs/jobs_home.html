@@ -8,6 +8,9 @@
             Your Gateway to Top Careers</h1>
         <p class="fs-5">Find your dream job now</p>
         <button class="btn btn-dark" id="profileBtn">Profile</button>
+        <a href="{% url 'dashboard' %}">
+            <button class="btn btn-dark">Dashboard</button>
+        </a>
     </div>
 </main>
 {% endblock %}
@@ -22,17 +25,17 @@
         const toggleNav = document.querySelector('.navbar-toggler')
 
         profileImage.classList.add('highlight-profile-img')
-        
-        if(window.innerWidth < 992){
-            if(toggleNav.getAttribute('aria-expanded') === 'false'){
+
+        if (window.innerWidth < 992) {
+            if (toggleNav.getAttribute('aria-expanded') === 'false') {
                 toggleNav.click()
             }
         }
 
-        setTimeout(function(){
+        setTimeout(function () {
             profileImage.classList.remove('highlight-profile-img')
-            toggleNav.setAttribute('aria-expanded','true')
-        },5000)       
+            toggleNav.setAttribute('aria-expanded', 'true')
+        }, 5000)
     })
 </script>
 {% endblock %}

@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import EmployeeForm,JobForm
 from .models import Employer,Job
+from django.contrib import messages
 
 # Create your views here.
 @login_required
@@ -14,6 +15,10 @@ def dashboard(request):
 
 
 def create_employee(request):
+
+    if request.user.user_type == 'Applicant':
+        return redirect('job_home')
+
     if request.method == 'POST':
         form = EmployeeForm(request.POST,request.FILES,instance=request.user.employer)
         if form.is_valid():
@@ -28,8 +33,11 @@ def create_employee(request):
 
 
 def create_job(request):
-    if request.method == 'POST':
 
+    if request.user.user_type == 'Applicant':
+        return redirect('job_home')
+
+    if request.method == 'POST':
         if not Employer.objects.filter(user=request.user).exists():
             return redirect('create_job')
 
