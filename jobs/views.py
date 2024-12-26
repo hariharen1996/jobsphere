@@ -9,9 +9,8 @@ def job_home(request):
     return render(request,'jobs/jobs_home.html',{'title':"jobs_home"})
 
 def dashboard(request):
-    emp_data = Employer.objects.all()
-    job_data = Job.objects.all()
-    return render(request,"jobs/dashboard.html",{'title':"job_dashboard","data":emp_data})
+    data = Job.objects.all()
+    return render(request,"jobs/dashboard.html",{'title':"job_dashboard","data":data})
 
 
 def create_employee(request):
@@ -30,9 +29,16 @@ def create_employee(request):
 
 def create_job(request):
     if request.method == 'POST':
+
+        if not Employer.objects.filter(user=request.user).exists():
+            return redirect('create_job')
+
         form = JobForm(request.POST)
         if form.is_valid():
-            form.save()
+            employer = Employer.objects.get(user=request.user)
+            job = form.save(commit=False)
+            job.employer = employer
+            job.save()
             return redirect('dashboard')
     else:
         form = JobForm()

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Employer,Job
+from .models import Employer,Job,JobSkills
 from django.core.exceptions import ValidationError
 
 class EmployeeForm(forms.ModelForm):
@@ -30,18 +30,25 @@ class EmployeeForm(forms.ModelForm):
             return cleaned_data 
 
 class JobForm(forms.ModelForm):
+    skills_required = forms.ModelMultipleChoiceField(
+        queryset=JobSkills.objects.all(),
+        widget = forms.SelectMultiple(),
+        required=True
+    )
+
     class Meta:
         model = Job
-        fields = ['title','description','location','salary_range','work_mode','role','experience','benefits','application_deadline','job_category','number_of_openings','status','skills_required','last_date_to_apply']
+        fields = ['title','description','location','salary_range','work_mode','experience','benefits','application_deadline','job_category','role','number_of_openings','status','skills_required','last_date_to_apply']
 
         widgets = {
             'application_deadline': forms.DateInput(attrs={'type':'date'}),
             'last_date_to_apply': forms.DateInput(attrs={'type':'date'}),
-            'title': forms.TextInput(attrs={'placeholder':"Enter job title"}),
+            'title': forms.TextInput(attrs={'placeholder':"Software Developer - Python"}),
             'description': forms.Textarea(attrs={'placeholder': "Enter job description"}),
-            'location': forms.TextInput(attrs={'placeholder':"Enter job location"}),
+            'location': forms.TextInput(attrs={'placeholder':"State/City"}),
             'role': forms.TextInput(attrs={'placeholder':"Enter job role"}),
             'experience': forms.NumberInput(attrs={'placeholder':"Enter job experience in digits"}),
             'benefits': forms.Textarea(attrs={'placeholder':"Enter any benefits provided by company"}),
-            'skills_required': forms.TextInput(attrs={'placeholder':"Enter job skills"})
+            'skills_required': forms.TextInput(attrs={'placeholder':"Enter job skills"}),
+            'job_category': forms.TextInput(attrs={'placeholder':"Enter job category"})
         }

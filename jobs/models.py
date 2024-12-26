@@ -22,6 +22,13 @@ class Employer(models.Model):
 
     def __str__(self):
         return f"{self.company_name}"
+    
+
+class JobSkills(models.Model):
+    name = models.CharField(max_length=100,unique=True)
+
+    def __str__(self):
+        return self.name    
 
 class Job(models.Model):
     SALARY_CHOICES = (
@@ -54,14 +61,6 @@ class Job(models.Model):
         ('filled', 'Filled'),
     )
 
-    JOB_CATEGORY_CHOICES = (
-        ('Technology', 'Technology'),
-        ('Finance', 'Finance'),
-        ('Marketing', 'Marketing'),
-        ('Human_Resources', 'Human_Resources'),
-        ('Bpo','Bpo')
-    )
-
     employer = models.ForeignKey(Employer,on_delete=models.CASCADE,related_name="jobs")
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -75,13 +74,13 @@ class Job(models.Model):
     posted_time = models.TimeField(auto_now_add=True)
     benefits = models.TextField(blank=True, null=True)
     application_deadline = models.DateField(blank=True, null=True)
-    job_category = models.CharField(max_length=100, choices=JOB_CATEGORY_CHOICES,default='Technology')
+    job_category = models.CharField(max_length=100, blank=True, null=True)
     number_of_openings = models.PositiveIntegerField(default=1)
     status = models.CharField(max_length=10, choices=JOB_STATUS_CHOICES, default='open')
-    skills_required = models.CharField(max_length=255, blank=True, null=True)
+    skills_required = models.ManyToManyField(JobSkills,blank=True)
     last_date_to_apply = models.DateField(blank=True, null=True)
 
 
 
     def __str__(self):
-        return f"{self.title} - {self.company_name}"
+        return f"{self.title}"
