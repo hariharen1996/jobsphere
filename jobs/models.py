@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.core.validators import RegexValidator
 from datetime import date
+from users.models import Skill
 
 CustomUser = get_user_model()
 
@@ -24,13 +25,6 @@ class Employer(models.Model):
     def __str__(self):
         return f"{self.user.username}"
     
-
-class JobSkills(models.Model):
-    name = models.CharField(max_length=100,unique=True)
-
-    def __str__(self):
-        return self.name    
-
 class Job(models.Model):
     SALARY_CHOICES = (
         ('0-3','0-3 Lakhs'),
@@ -82,10 +76,11 @@ class Job(models.Model):
     posted_time = models.DateTimeField(auto_now_add=True)
     benefits = models.TextField(blank=True, null=True)
     application_deadline = models.DateField(blank=False, null=False,default=date(2024, 12, 30))
-    job_category = models.CharField(max_length=100, blank=False, null=False,default="Development")
+    job_category = models.CharField(max_length=100, blank=False, null=False,default="Development/It")
     number_of_openings = models.PositiveIntegerField(default=1)
     status = models.CharField(max_length=10, choices=JOB_STATUS_CHOICES, default='open')
-    skills_required = models.ManyToManyField(JobSkills,blank=False)
+    job_related_skills =  models.ManyToManyField(Skill,related_name='job_skills')
+
 
 
 

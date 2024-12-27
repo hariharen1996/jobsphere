@@ -1,6 +1,10 @@
 from django import forms
-from .models import Employer,Job,JobSkills
+from .models import Employer,Job
 from django.core.exceptions import ValidationError
+import logging 
+from users.models import Skill
+
+logger = logging.getLogger(__name__)
 
 class EmployeeForm(forms.ModelForm):
     class Meta:
@@ -30,27 +34,21 @@ class EmployeeForm(forms.ModelForm):
             return cleaned_data 
 
 class JobForm(forms.ModelForm):
-    skills_required = forms.ModelMultipleChoiceField(
-        queryset=JobSkills.objects.all(),
-        widget = forms.SelectMultiple(),
-        required=True
-    )
-
-    last_date_to_apply = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=False)
-
-
+    job_related_skills = forms.ModelMultipleChoiceField(
+            queryset=Skill.objects.all(),
+            widget=forms.CheckboxSelectMultiple,
+            required=True
+    )    
     class Meta:
         model = Job
-        fields = ['title','description','location','salary_range','work_mode','experience','benefits','application_deadline','job_category','role','number_of_openings','status','skills_required']
+        fields = ['title','description','location','salary_range','work_mode','experience','benefits','application_deadline','job_category','role','number_of_openings','status','job_related_skills']
 
         widgets = {
             'application_deadline': forms.DateInput(attrs={'type':'date'}),
-            'title': forms.TextInput(attrs={'placeholder':"Software Developer - Python"}),
+            'title': forms.TextInput(attrs={'placeholder':"Software Developer"}),
             'description': forms.Textarea(attrs={'placeholder': "Enter job description"}),
-            'location': forms.TextInput(attrs={'placeholder':"State/City"}),
+            'location': forms.TextInput(attrs={'placeholder':"Chennai"}),
             'role': forms.TextInput(attrs={'placeholder':"Enter job role"}),
-            'experience': forms.TextInput(attrs={'placeholder':"Enter job experience in digits"}),
             'benefits': forms.Textarea(attrs={'placeholder':"Enter any benefits provided by company"}),
-            'skills_required': forms.TextInput(attrs={'placeholder':"Enter job skills"}),
             'job_category': forms.TextInput(attrs={'placeholder':"Enter job category"})
-        }
+        }  

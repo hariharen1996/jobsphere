@@ -12,7 +12,7 @@ def create_profile(sender,instance,created,**kwargs):
     if created:
         if instance.user_type == 'Applicant':
             Profile.objects.get_or_create(user=instance)
-        elif instance.user_type == 'Employer':
+        elif instance.user_type == 'Recruiter':
             Employer.objects.get_or_create(user=instance)
 
 
