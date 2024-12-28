@@ -10,24 +10,15 @@
                 <img src="{{ user.employer.employer_image.url }}" alt="{{user.username}}" class="user-img rounded" />
                 <div class="content">
                     <p class="m-0">{{ user.username }}</p>
-                    <p class="m-0">{% if user.employer.company_name %}{{ user.employer.company_email }}{% else %} please update your email {% endif %}</p>
+                    <p class="m-0">{{ user.employer.employer_email|default:'please update your email' }}</p>
                 </div>
             </div>
             <hr />
             <div class="employer-company-content d-flex align-items-center gap-3 mb-3">
-                {% if user.employer.company_logo %}
-                <img src="{{ user.employer.company_logo.url }}" alt="{{ user.employer.company_name }}"
-                    class="user-img rounded" />
-                {% else %}
-                <img src="../../../media/default_logo.png" alt="{{ user.employer.company_name }}"
-                    class="user-img rounded" />
-                {% endif %}
-
+                <img src="{{ user.employer.company_logo.url|default:'/media/default_logo.png' }}" alt="{{ user.employer.company_name }}" class="user-img rounded" />
                 <div class="content">
-                    <p class="m-0">{% if user.employer.company_name %}{{ user.employer.company_name }}{% else %} Please
-                        update company name {% endif %}</p>
-                    <p class="m-0">{% if user.employer.company_location %}{{ user.employer.company_location }}{% else %}
-                        Please update company location{% endif %}</p>
+                    <p class="m-0">{{ user.employer.company_name|default:'Please update company name' }}</p>
+                    <p class="m-0">{{ user.employer.company_location|default:'Please update company location' }} </p>
                 </div>
             </div>
             <hr />

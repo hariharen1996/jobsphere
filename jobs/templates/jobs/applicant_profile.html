@@ -1,0 +1,58 @@
+{% load static %}
+
+{% block content %}
+<div class="profile-details ">
+    <div class="d-flex align-items-center gap-2">
+      <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-img">
+      <div class="profile-content">
+        <p>{{ user.username }}</p>
+        <p>{{ user.email }}</p>
+      </div>
+    </div>
+    <p class="bio mt-2"><span class="fw-bold">Summary:</span> {{ user.profile.bio }}</p>
+    <p class="education mt-2"><span class="fw-bold">Education:</span> {{ user.profile.education }}</p>
+    <p class="cgpa mt-2"><span class="fw-bold">CGPA:</span> {{ user.profile.cgpa }}</p>
+    <p class="exp mt-2"><span class="fw-bold">Work-Experience:</span> {{ user.profile.work_experience }}</p>
+    <p class="loc mt-2"><span class="fw-bold">Location:</span> {{ user.profile.location }}</p>
+    {% if user.profile.resume %}
+    <span class="fw-bold">Resume:</span>
+    <a href="{{ user.profile.resume.url }}" download="{{ user.profile.resume.name }}">Download Resume</a>
+    {% else %}
+    <p>No resume available</p>
+    {% endif %}
+
+    {% if user.profile.skills.all %}
+    <p class="fw-bold mt-2">Skills: </p>
+    <ul>
+      {% for skill in user.profile.skills.all %}
+      <li>{{ skill.name }}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="mt-2"><span class="fw-bold">Skills: </span> No skills available</p>
+    {% endif %}
+
+    {% if user.profile.certification.all %}
+    <span class="fw-bold mt-2">Certifications: </span>
+    <ul class="mt-2">
+      {% for cert in user.profile.certification.all %}
+      <li>
+        <p class="fs-4 mt-2">CertificationName: {{ cert.name|upper }}</p>
+        <div>
+          {% if cert.cert_image %}
+          <img src="{{ cert.cert_image.url }}" class="img-fluid cert-img" />
+          {% else %}
+          <p>No Image available for this certification</p>
+          {% endif %}
+        </div>
+
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="mt-2"><span class="fw-bold">Certifications: </span> No Certification available</p>
+    {% endif %}
+  </div>
+{% endblock %}
+
+

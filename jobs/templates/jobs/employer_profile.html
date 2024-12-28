@@ -1,0 +1,29 @@
+{% load static %}
+
+{% block content %}
+<div class="employee-details ">
+    <div class="d-flex align-items-center gap-2">
+        <img src="{{ user.employer.company_logo.url|default:'/media/default_logo.png' }}" alt="{{ user.employer.company_name }}" class="user-img rounded" />
+        <div class="profile-content">
+            <p>{{ user.username }}</p>
+            <p>{{ user.employer.employer_email|default:"Please update your email" }}</p>
+        </div>
+    </div>
+    <p class="company-name mt-2"><span class="fw-bold">Company Name:</span> {{ user.employer.company_name|default:"Please update company name" }} </p>
+    <p class="company-website mt-2"><span class="fw-bold">Company Website:</span> {{ user.employer.company_website|default:"Please update company website" }} </p>
+    <p class="company-location mt-2"><span class="fw-bold">Company Location:</span> {{ user.employer.company_location|default:'Please update company location' }}</p>
+    <p class="contact mt-2"><span class="fw-bold">Recruiter Contact:</span> {{ user.employer.employer_contact|default:'Please update your contact number' }}</p>
+    <p class="est-date mt-2"><span class="fw-bold">Established Date:</span> {{ user.employer.company_start_date|default:'Please update company start date' }} </p>
+    <p class="linkedin mt-2"><span class="fw-bold">Linkedin:</span> {{ user.employer.linkedin_url|default:'Please update company linkedin_url' }}</p>
+    <p class="desc mt-2"><span class="fw-bold">About us:</span> {{ user.employer.company_description|default:'Please update about company info' }}</p>
+    <p class="cmps-size mt-2"><span class="fw-bold">Company Size:</span>{{ user.employer.company_size|default:'Please update company size' }} </p>
+    <p class="hiring mt-2"><span class="fw-bold">Is-Hiring:</span>
+        {% if user.employer.is_hiring %}
+        Yes
+        {% else %}
+        No
+        {% endif %}
+    </p>
+
+</div>
+{% endblock %}

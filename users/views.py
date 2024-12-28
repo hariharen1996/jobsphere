@@ -51,6 +51,10 @@ def user_logout(request):
 
 @login_required
 def user_profile(request):
+
+    if request.user.user_type == 'Recruiter':
+        return redirect('job_home')
+
     if request.method == 'POST':
         user_form = CustomUserUpdateForm(request.POST,instance=request.user)
         profile_form = ProfileUpdateForm(request.POST,request.FILES,instance=request.user.profile)
