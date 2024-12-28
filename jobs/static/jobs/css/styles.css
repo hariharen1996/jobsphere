@@ -108,6 +108,7 @@ body::after{
     transition: all 0.5s ease;
     z-index: -1;
     opacity: 0;
+    overflow-y: scroll;
 }
 
 .filter-sidebar.show {

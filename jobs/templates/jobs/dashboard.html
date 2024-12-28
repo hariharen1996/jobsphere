@@ -150,11 +150,12 @@
     </div>
 
     <div class="search-container mt-3">
+     <form method="GET" action="{% url 'dashboard' %}">   
         <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon1">🔍</span>
-            <input type="text" class="form-control" placeholder="Enter skills/title/location" aria-label="Username"
-                aria-describedby="basic-addon1">
+            <span class="input-group-text" id="search">🔍</span>
+            <input type="text" class="form-control" name="search" value="" placeholder="Enter skills/title/location" />
         </div>
+    </form>  
     </div>
 
     <div class="job-container mt-3 mb-3">
@@ -193,6 +194,8 @@
             </article>
         </a>
     </div>  
+        {% empty %}
+            <p class="text-center">No jobs found matching your search.</p>
         {% endfor %}
     </div>
 </main>

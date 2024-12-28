@@ -4,6 +4,7 @@ from .forms import EmployeeForm,JobForm
 from .models import Employer,Job
 from django.contrib import messages
 from users.models import Profile
+from django.db.models import Q
 
 # Create your views here.
 @login_required
@@ -31,8 +32,18 @@ def dashboard(request):
             messages.warning(request, "Please create your employer profile to access the dashboard")
             return redirect('job_home')    
 
-    data = Job.objects.all()
-    return render(request,"jobs/dashboard.html",{'title':"job_dashboard","data":data})
+    search_query = request.GET.get('search','')
+    print(search_query)
+    if search_query:
+        data = Job.objects.filter(
+            Q(employer__company_name__icontains=search_query) | Q(location__icontains=search_query) | Q(job_related_skills__name__icontains=search_query)
+        ).distinct()
+    else:
+        data = Job.objects.all()
+    
+
+
+    return render(request,"jobs/dashboard.html",{'title':"job_dashboard","data":data,"search_query":search_query})
 
 
 def create_employee(request):
