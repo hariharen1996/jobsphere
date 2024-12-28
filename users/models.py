@@ -69,6 +69,14 @@ class Profile(models.Model):
 
         if total_cert > 5:
             raise ValidationError('A profile can only have 5 certifications')   
+    
+    def is_complete(self):
+        all_fields = [self.image,self.bio,self.education,self.cgpa,self.work_experience,self.resume,self.location,self.certification,self.skills]
+
+        return not any(fields is None or (isinstance(fields,str) and fields.strip() == '') 
+                      or (isinstance(fields,list) and len(fields) == 0) for fields in all_fields
+                       )
 
     def __str__(self):
         return f"{self.user.username} profile"
+    

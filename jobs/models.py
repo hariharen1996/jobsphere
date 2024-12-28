@@ -10,8 +10,9 @@ CustomUser = get_user_model()
 # Create your models here.
 class Employer(models.Model):
     user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,unique=True)
+    employer_image = models.ImageField(upload_to='employer_profile_pic/',default="emp_default.jpg")
     company_name = models.CharField(max_length=255)
-    company_logo = models.ImageField(upload_to="company_logo/")
+    company_logo = models.ImageField(upload_to="company_logo/",null=True,blank=True,default='default_logo.png')
     company_website = models.URLField(blank=True,null=True)
     company_description = models.TextField()
     company_location = models.CharField(max_length=255)
@@ -21,6 +22,15 @@ class Employer(models.Model):
     linkedin_url = models.URLField(blank=True, null=True)
     company_size = models.CharField(max_length=100, blank=True, null=True)
     is_hiring = models.BooleanField(default=True)
+
+      
+    def is_complete(self):
+        all_fields = [self.employer_image,self.company_name,self.company_logo,self.company_website,self.company_description,self.company_location,self.employer_email,self.employer_contact,self.company_start_date,self.linkedin_url,self.company_size,self.is_hiring]
+
+        return not any(fields is None or (isinstance(fields,str) and fields.strip() == '') 
+                      or (isinstance(fields,list) and len(fields) == 0) for fields in all_fields
+                       )
+
 
     def __str__(self):
         return f"{self.user.username}"

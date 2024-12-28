@@ -5,12 +5,39 @@
 {% block content %}
 <main class="employer_form">
     <div class="m-2 d-flex justify-content-center align-items-center mt-5">
-        <form method="POST" enctype="multipart/form-data" class="bg-white p-5 rounded shadow mb-5">
-            {% csrf_token %}
-            {{ form|crispy }}
-            <button type="submit" class="btn btn-dark">Submit</button>
-        </form>
+        <div class="bg-white p-5 rounded shadow mb-5">
+            <div class="employer-profile-content d-flex align-items-center gap-3 mb-3">
+                <img src="{{ user.employer.employer_image.url }}" alt="{{user.username}}" class="user-img rounded" />
+                <div class="content">
+                    <p class="m-0">{{ user.username }}</p>
+                    <p class="m-0">{% if user.employer.company_name %}{{ user.employer.company_email }}{% else %} please update your email {% endif %}</p>
+                </div>
+            </div>
+            <hr />
+            <div class="employer-company-content d-flex align-items-center gap-3 mb-3">
+                {% if user.employer.company_logo %}
+                <img src="{{ user.employer.company_logo.url }}" alt="{{ user.employer.company_name }}"
+                    class="user-img rounded" />
+                {% else %}
+                <img src="../../../media/default_logo.png" alt="{{ user.employer.company_name }}"
+                    class="user-img rounded" />
+                {% endif %}
+
+                <div class="content">
+                    <p class="m-0">{% if user.employer.company_name %}{{ user.employer.company_name }}{% else %} Please
+                        update company name {% endif %}</p>
+                    <p class="m-0">{% if user.employer.company_location %}{{ user.employer.company_location }}{% else %}
+                        Please update company location{% endif %}</p>
+                </div>
+            </div>
+            <hr />
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-dark">Update Employee</button>
+            </form>
+        </div>
     </div>
 </main>
- 
+
 {% endblock %}

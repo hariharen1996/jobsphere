@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employer
-        fields = ['company_name','company_logo','company_website','company_description','company_location','employer_email','employer_contact','company_start_date','linkedin_url','company_size','is_hiring']
+        fields = ['employer_image','company_name','company_logo','company_website','company_description','company_location','employer_email','employer_contact','company_start_date','linkedin_url','company_size','is_hiring']
 
         widgets = {
             'company_start_date':forms.DateInput(attrs={'type': 'date'}),
@@ -26,10 +26,10 @@ class EmployeeForm(forms.ModelForm):
 
         def clean(self):
             cleaned_data = super().clean()
-            fields = ['company_name','company_logo','company_website','company_description','company_location','employer_email','employer_contact','company_start_date','linkedin_url','company_size','is_hiring']
+            fields = ['employer_image','company_name','company_logo','company_website','company_description','company_location','employer_email','employer_contact','company_start_date','linkedin_url','company_size','is_hiring']
 
             for data in fields:
-                if not cleaned_data(data):
+                if not cleaned_data.get(data):
                     raise ValidationError('Please fill the fields')
             return cleaned_data 
 

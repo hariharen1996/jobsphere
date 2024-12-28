@@ -48,9 +48,15 @@
             </form>
           </li>
           <li class="nav-item">
+           {% if user.user_type == 'Applicant' %} 
             <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
               <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-img">
             </a>
+           {% else %}
+           <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+            <img src="{{ user.employer.employer_image.url }}" alt="{{ user.username }}" class="profile-img">
+          </a>
+          {% endif %}
           </li>
           {% else %}
           <li class="nav-item">
@@ -69,10 +75,13 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="profileModalLabel">Profile Information</h5>
+          <h5 class="modal-title" id="profileModalLabel">
+            {% if user.user_type == 'Applicant' %} Profile Information {% else %} Employee Information {% endif %}
+          </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+        {% if user.user_type == 'Applicant' %}  
           <div class="profile-details ">
             <div class="d-flex align-items-center gap-2">
               <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-img">
@@ -125,11 +134,48 @@
             <p class="mt-2"><span class="fw-bold">Certifications: </span> No Certification available</p>
             {% endif %}
           </div>
+        {% else %}
+        <div class="employee-details ">
+          <div class="d-flex align-items-center gap-2">
+            {% if user.employer.company_logo %}
+                <img src="{{ user.employer.company_logo.url }}" alt="{{ user.employer.company_name }}" class="user-img rounded" />
+            {% else %}
+                <img src="../../../media/default_logo.png" alt="{{ user.employer.company_name }}" class="user-img rounded" />
+            {% endif %}
+            <div class="profile-content">
+              <p>{{ user.username }}</p>
+              <p>{% if user.employer.employer_email %} {{ user.employer.employer_email }} {% else %} Please update your email {% endif %}</p>
+            </div>
+          </div>
+          <p class="company-name mt-2"><span class="fw-bold">Company Name:</span> {% if user.employer.company_name %} {{ user.employer.company_name }} {% else %} Please update company name {% endif %}</p>
+          <p class="company-website mt-2"><span class="fw-bold">Company Website:</span> {% if user.employer.company_website %} {{ user.employer.company_website }} {% else %} Please update company webiste {% endif %}</p>
+          <p class="company-location mt-2"><span class="fw-bold">Company Location:</span> {% if user.employer.company_location %} {{ user.employer.company_location }} {% else %} Please update company location {% endif %}</p>
+          <p class="contact mt-2"><span class="fw-bold">Recruiter Contact:</span> {% if user.employer.employer_contact %} {{ user.employer.employer_contact }} {% else %} Please update your contact number {% endif %}</p>
+          <p class="est-date mt-2"><span class="fw-bold">Established Date:</span> {% if user.employer.company_start_date %} {{ user.employer.company_start_date }} {% else %} Please update company start date {% endif %}</p>
+          <p class="linkedin mt-2"><span class="fw-bold">Linkedin:</span> {% if user.employer.linked_url %} {{ user.employer.linkedin_url }} {% else %} Please update company linkedin_url {% endif %}</p>
+          <p class="desc mt-2"><span class="fw-bold">About us:</span> {% if user.employer.company_description %} {{ user.employer.company_description }} {% else %} Please update about company info {% endif %}</p>
+          <p class="cmps-size mt-2"><span class="fw-bold">Company Size:</span>{% if user.employer.company_size %} {{ user.employer.company_size }} {% else %} Please update company size {% endif %}</p>
+          <p class="hiring mt-2"><span class="fw-bold">Is-Hiring:</span> 
+              {% if user.employer.is_hiring %}
+                Yes
+              {% else %}
+                  No 
+              {% endif %}
+          </p>
+          
+
+          
+        </div>
+        {% endif %}
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-dark">
+            {% if user.user_type == 'Applicant' %}
             <a href="{% url 'profile' %}" class="text-decoration-none text-white">Edit Profile</a>
+            {% else %}
+            <a href="{% url 'create_employee' %}" class="text-decoration-none text-white">Edit Employer</a>
+            {% endif %}
           </button>
         </div>
       </div>
