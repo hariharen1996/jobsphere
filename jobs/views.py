@@ -32,18 +32,44 @@ def dashboard(request):
             messages.warning(request, "Please create your employer profile to access the dashboard")
             return redirect('job_home')    
 
+    data = Job.objects.all()
+    
+
     search_query = request.GET.get('search','')
-    print(search_query)
+    work_mode_query = request.GET.get('work_mode','')
+    salary_range_query = request.GET.getlist('salary_range[]',[])
+
+    #print(search_query)
+    
     if search_query:
         data = Job.objects.filter(
             Q(employer__company_name__icontains=search_query) | Q(location__icontains=search_query) | Q(job_related_skills__name__icontains=search_query)
         ).distinct()
-    else:
-        data = Job.objects.all()
     
+    if work_mode_query:
+        data = data.filter(work_mode=work_mode_query)
+
+    if salary_range_query:
+        salary = Q()
+        for check_salary in salary_range_query:
+            if check_salary == '0-3':
+                salary |= Q(min_salary__gte=0,max_salary__lte=3)
+            elif check_salary == '3-6':
+                salary |= Q(min_salary__gte=3,max_salary__lte=6)
+            elif check_salary == '6-10':
+                salary |= Q(min_salary__gte=6,max_salary__lte=10)
+            elif check_salary == '10-15':
+                salary |= Q(min_salary__gte=10,max_salary__lte=15)
+            elif check_salary == '15-20':
+                salary |= Q(min_salary__gte=15,max_salary__lte=20)
+            elif check_salary == '20+':
+                salary |= Q(min_salary__gte=20)
 
 
-    return render(request,"jobs/dashboard.html",{'title':"job_dashboard","data":data,"search_query":search_query})
+        if salary:
+            data = data.filter(salary)        
+
+    return render(request,"jobs/dashboard.html",{'title':"job_dashboard","data":data,"search_query":search_query,'work_mode_query':work_mode_query,"salary_range_query":salary_range_query})
 
 
 def create_employee(request):

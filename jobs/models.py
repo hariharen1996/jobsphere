@@ -46,7 +46,7 @@ class Job(models.Model):
     )
 
     WORK_MODE_CHOICES = (
-        ('wfo',"Work from Office"),
+        ('WFO',"Work from Office"),
         ('hybrid','Hybrid'),
         ('remote','Remote')
     )
@@ -77,6 +77,8 @@ class Job(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     location = models.CharField(max_length=200)
+    min_salary = models.DecimalField(max_digits=10,decimal_places=2,default=0)
+    max_salary = models.DecimalField(max_digits=10,decimal_places=2,default=3)
     salary_range = models.CharField(max_length=5,choices=SALARY_CHOICES,default='0-3')
     work_mode = models.CharField(max_length=10,choices=WORK_MODE_CHOICES,default="wfo")
     role = models.CharField(max_length=255)
@@ -91,7 +93,29 @@ class Job(models.Model):
     status = models.CharField(max_length=10, choices=JOB_STATUS_CHOICES, default='open')
     job_related_skills =  models.ManyToManyField(Skill,related_name='job_skills')
 
-
+    def save(self,*args,**kwargs):
+        if self.salary_range == '0-3':
+            self.min_salary = 0
+            self.max_salary = 3
+        elif self.salary_range == '3-6':
+            self.min_salary = 3
+            self.max_salary = 6 
+        elif self.salary_range == '6-10':
+            self.min_salary = 6
+            self.max_salary = 10 
+        elif self.salary_range == '10-15':
+            self.min_salary = 10
+            self.max_salary = 15
+        elif self.salary_range == '15-20':
+            self.min_salary = 15
+            self.max_salary = 20
+        elif self.salary_range == '20+':
+            self.min_salary = 20
+            self.max_salary = 100000
+        super(Job,self).save(*args,**kwargs)
+        
+        
+        
 
 
     def __str__(self):

@@ -12,40 +12,44 @@
             </header>
             <article class="workmode">
                 <p class="fs-4 mt-3 fw-bold">Work Mode</p>
-                <select class="form-select" aria-label="Default select example">
-                    <option selected>Select Work Mode</option>
-                    <option value="wfo">Work from office</option>
-                    <option value="hybrid">Hybrid</option>
-                    <option value="remote">Remote</option>
-                </select>
+                <form method="GET" action="{% url 'dashboard' %}">
+                    <select class="form-select" aria-label="Default select example" name="work_mode" onchange="this.form.submit()">
+                        <option selected value="">Select Work Mode</option>
+                        <option value="WFO" {% if work_mode_query == 'WFO' %}selected{% endif %}>Work from office</option>
+                        <option value="hybrid" {% if work_mode_query == 'hybrid' %}selected{% endif %}>Hybrid</option>
+                        <option value="remote" {% if work_mode_query == 'remote' %}selected{% endif %}>Remote</option>
+                    </select>
+                </form>
             </article>
             <article class="salary">
                 <p class="fs-4 fw-bold mt-2">Salary</p>
+               <form action="{% url 'dashboard' %}" method="GET">
                 <div class="form-check">
-                    <input class="form-check-input" name="salary_range" type="checkbox" value="0-3" id="salaryRange1">
+                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="0-3" {% if salary_range_query == '0-3' %} checked {% endif %} id="salaryRange1">
                     <label class="form-check-label" for="defaultCheck1">0-3 Lakhs</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" name="salary_range" type="checkbox" value="3-6" id="salaryRange2">
+                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="3-6" {% if salary_range_query == '3-6' %} checked {% endif %} id="salaryRange2">
                     <label class="form-check-label" for="salaryRange2">3-6 Lakhs</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" name="salary_range" type="checkbox" value="6-10" id="salaryRange3">
+                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="6-10" {% if salary_range_query == '6-10' %} checked {% endif %} id="salaryRange3">
                     <label class="form-check-label" for="salaryRange3">6-10 Lakhs</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" name="salary_range" type="checkbox" value="10-15" id="salaryRange4">
+                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="10-15" {% if salary_range_query == '10-15' %} checked {% endif %} id="salaryRange4">
                     <label class="form-check-label" for="salaryRange4">10-15 Lakhs</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" name="salary_range" type="checkbox" value="15-20" id="salaryRange5">
+                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="15-20" {% if salary_range_query == '15-20' %} checked {% endif %} id="salaryRange5">
                     <label class="form-check-label" for="salaryRange5">15-20 Lakhs</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" name="salary_range" type="checkbox" value="20+" id="salaryRange6">
+                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="20+" {% if salary_range_query == '20+' %} checked {% endif %} id="salaryRange6">
                     <label class="form-check-label" for="salaryRange6">20+ Lakhs</label>
                 </div>
-
+                <button type="submit" class="btn btn-primary">Apply</button>
+            </form>
             </article>
             <article class="location">
                 <p class="fs-4 fw-bold mt-2">Location</p>
@@ -183,6 +187,11 @@
                     <span class="ml-2"><i class="fas fa-map-marker-alt"></i></span>
                     <span>{{ result.location }}</span>
                 </div>
+                <div>
+                    <span class="ml-2"><i class="fas fa-laptop-house"></i></span>
+                    <span>{{ result.work_mode|capfirst }}</span>
+                </div>
+                
             </article>
             <article class="mt-2">
                 <p class="">{{ result.description|truncatechars:100 }}</p>
