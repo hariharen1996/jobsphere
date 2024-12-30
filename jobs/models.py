@@ -115,10 +115,17 @@ class Job(models.Model):
             self.min_salary = 20
             self.max_salary = 100000
         super(Job,self).save(*args,**kwargs)
-        
-        
-        
-
 
     def __str__(self):
         return f"{self.title}"
+
+class SavedJob(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    job = models.ForeignKey(Job,on_delete=models.CASCADE)
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user','job')
+
+    def __str__(self):
+        return f"{self.user.username} saved {self.job.title}"
