@@ -12,8 +12,8 @@
             </header>
             <article class="workmode">
                 <p class="fs-4 mt-3 fw-bold">Work Mode</p>
-                <form method="GET" action="{% url 'dashboard' %}">
-                    <select class="form-select" aria-label="Default select example" name="work_mode" onchange="this.form.submit()">
+                <form method="GET" action="{% url 'dashboard' %}" id="workModeSubmit">
+                    <select class="form-select" aria-label="Default select example" name="work_mode">
                         <option selected value="">Select Work Mode</option>
                         <option value="WFO" {% if work_mode_query == 'WFO' %}selected{% endif %}>Work from office</option>
                         <option value="hybrid" {% if work_mode_query == 'hybrid' %}selected{% endif %}>Hybrid</option>
@@ -25,7 +25,7 @@
                 <p class="fs-4 fw-bold mt-2">Salary</p>
                <form action="{% url 'dashboard' %}" method="GET">
                 <div class="form-check">
-                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="0-3" {% if salary_range_query == '0-3' %} checked {% endif %} id="salaryRange1">
+                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="0-3" {% if salary_range_query == '0-3' %} checked {% endif %} id="salaryRange1" > 
                     <label class="form-check-label" for="defaultCheck1">0-3 Lakhs</label>
                 </div>
                 <div class="form-check">
@@ -48,92 +48,97 @@
                     <input class="form-check-input" name="salary_range[]" type="checkbox" value="20+" {% if salary_range_query == '20+' %} checked {% endif %} id="salaryRange6">
                     <label class="form-check-label" for="salaryRange6">20+ Lakhs</label>
                 </div>
-                <button type="submit" class="btn btn-primary">Apply</button>
+                <button type="submit" class="btn btn-primary mt-2">Apply</button>
             </form>
             </article>
             <article class="location">
                 <p class="fs-4 fw-bold mt-2">Location</p>
+            <form method="GET" action="{% url 'dashboard' %}">  
                 <div class="form-check">
-                    <input class="form-check-input" name="location" type="checkbox" value="chennai" id="location1">
-                    <label class="form-check-label" for="location1">Chennai</label>
+                    <input class="form-check-input" name="location[]" type="checkbox" value="all" {% if location_query == 'all' %} checked {% endif %} id="location1">
+                    <label class="form-check-label" for="location1">All</label>
+                </div>  
+                <div class="form-check">
+                    <input class="form-check-input" name="location[]" type="checkbox" value="chennai" {% if location_query == 'chennai' %} checked {% endif %} id="location2">
+                    <label class="form-check-label" for="location2">Chennai</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" name="location" type="checkbox" value="bengaluru" id="location2">
-                    <label class="form-check-label" for="location2">Bengaluru</label>
+                    <input class="form-check-input" name="location[]" type="checkbox" value="bengaluru" {% if location_query == 'bengaluru' %} checked {% endif %} id="location3">
+                    <label class="form-check-label" for="location3">Bengaluru</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" name="location" type="checkbox" value="coimbatore" id="location3">
-                    <label class="form-check-label" for="location3">Coimbatore</label>
+                    <input class="form-check-input" name="location[]" type="checkbox" value="coimbatore" {% if location_query == 'coimbatore' %} checked {% endif %} id="location4">
+                    <label class="form-check-label" for="location4">Coimbatore</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" name="location" type="checkbox" value="madurai" id="location4">
-                    <label class="form-check-label" for="location4">Madurai</label>
+                    <input class="form-check-input" name="location[]" type="checkbox" value="madurai" {% if location_query == 'madurai' %} checked {% endif %} id="location5">
+                    <label class="form-check-label" for="location5">Madurai</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" name="location" type="checkbox" value="delhi" id="location5">
-                    <label class="form-check-label" for="location5">Delhi</label>
+                    <input class="form-check-input" name="location[]" type="checkbox" value="delhi" {% if location_query == 'delhi' %} checked {% endif %} id="location6">
+                    <label class="form-check-label" for="location6">Delhi</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" name="location" type="checkbox" value="hyderabad" id="location6">
-                    <label class="form-check-label" for="location6">Mumbai</label>
+                    <input class="form-check-input" name="location[]" type="checkbox" value="hyderabad" {% if location_query == 'hyderabad' %} checked {% endif %} id="location7">
+                    <label class="form-check-label" for="location7">Hyderabad</label>
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="location" type="checkbox" value="other" id="location7">
-                    <label class="form-check-label" for="location7">Other</label>
-                </div>
-                
+                <button type="submit" class="btn btn-primary mt-2">Apply</button>
+            </form>  
             </article>
             <article class="role">
                 <p class="fs-4 fw-bold mt-2">Role</p>
+                <form action="{% url 'dashboard' %}" method="get" id="roleSubmit">
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" value="software_development" name="role" id="role1">
+                    <input class="form-check-input" type="radio" value="Software Development"  {% if role_query == 'Software Development' %} checked {% endif %} name="role" id="role1">
                     <label class="form-check-label" for="role1">Software Development</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" value="qa_testing" name="role" id="role2">
+                    <input class="form-check-input" type="radio" value="Software Tester" name="role"  {% if role_query == 'Software Tester' %} checked {% endif %} id="role2">
                     <label class="form-check-label" for="role2">Software Tester</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" value="devops" name="role" id="role3">
+                    <input class="form-check-input" type="radio" value="Devops" name="role"  {% if role_query == 'Devops' %} checked {% endif %} id="role3">
                     <label class="form-check-label" for="role3">Devops</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" value="ml" name="role" id="role4">
+                    <input class="form-check-input" type="radio" value="Machine Learning" name="role"  {% if role_query == 'Machine Learning' %} checked {% endif %} id="role4">
                     <label class="form-check-label" for="role4">Machine Learning</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" value="business_developer" name="role" id="role5">
+                    <input class="form-check-input" type="radio" value="Business Development"  {% if role_query == 'Business Development' %} checked {% endif %} name="role" id="role5">
                     <label class="form-check-label" for="role5">Business Development</label>
                 </div>
+            </form>
             </article>
             <article class="experience">
                 <p class="fs-4 mt-2 fw-bold">Experience</p>
+              <form method="GET" action="{% url 'dashboard' %}" id="experienceSubmit">  
                 <div class="form-group">
-                    <input type="range" class="form-range" id="experienceRange" min="0" max="20" step="1" value="5">
+                    <input type="range" class="form-range" id="experienceRange" name="experience" min="0" max="20" value="{{ experience_query|default:'5' }}">
                     <div class="d-flex justify-content-between">
                         <span>0</span>
                         <span>20</span>
                     </div>
-                    <p class="mt-2">Experience: <span id="experienceValue">5</span> years</p>
+                    <p class="mt-2">Experience: <span id="experienceValue">{{ experience_query|default:'5' }}</span> years</p>
                 </div>
+            </form>  
             </article>
             <article class="freshness pb-5">
                 <p class="fs-4 mt-2 fw-bold">Freshness</p>
+             <form action="{% url 'dashboard' %}" method="get" id="freshnessSubmit">   
                 <div class="form-group">
                     <label for="timeRange" class="form-label">Select Time Range</label>
                     <select class="form-select" id="timeRange" name="time_range">
-                        <option value="0">freshness</option>
-                        <option value="1">Last 1 Day</option>
-                        <option value="3">Last 3 Days</option>
-                        <option value="7">Last 7 Days</option>
-                        <option value="15">Last 15 Days</option>
-                        <option value="30">Last 30 Days</option>
+                        <option value="0" {% if time_range_query == '0' %} selected {% endif %}>Freshness</option>
+                        <option value="1" {% if time_range_query == '1' %} selected {% endif %}>Last 1 Day</option>
+                        <option value="3" {% if time_range_query == '3' %} selected {% endif %}>Last 3 Days</option>
+                        <option value="7" {% if time_range_query == '7' %} selected {% endif %}>Last 7 Days</option>
+                        <option value="15" {% if time_range_query == '15' %} selected {% endif %}>Last 15 Days</option>
+                        <option value="30" {% if time_range_query == '30' %} selected {% endif %}>Last 30 Days</option>
                     </select>
                 </div>
+            </form>     
             </article>
-            <footer>
-                <button class="btn btn-warning">Clear</button>
-            </footer>
         </aside>
     </div>
 
@@ -216,6 +221,10 @@
     const filterOpen = document.querySelector('#filter-open')
     const filterClose = document.querySelector('.filter-close')
     const filterSidebar = document.querySelector('.filter-sidebar')
+    const workModeForm = document.querySelector('#workModeSubmit')
+    const roleForm = document.querySelector('#roleSubmit')
+    const experienceForm = document.querySelector('#experienceSubmit')
+    const freshnessForm = document.querySelector('#freshnessSubmit')
 
     filterOpen.addEventListener('click', function () {
         filterSidebar.classList.add('show')
@@ -225,5 +234,26 @@
     filterClose.addEventListener('click', function () {
         filterSidebar.classList.remove('show')
     })
+
+    workModeForm.addEventListener('change',function(){
+        workModeForm.submit()
+    })
+
+    roleForm.addEventListener('click',function(){
+        roleForm.submit()
+    })
+    
+    experienceForm.addEventListener('change',function(){
+        experienceForm.submit()
+    })
+    
+    freshnessForm.addEventListener('change',function(){
+        freshnessForm.submit()
+    })
+
+    document.getElementById('experienceRange').addEventListener('input', function() {
+    document.getElementById('experienceValue').textContent = this.value;
+});
+
 </script>
 {% endblock %}

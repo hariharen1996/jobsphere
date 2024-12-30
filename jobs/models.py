@@ -67,8 +67,10 @@ class Job(models.Model):
     )
 
     EXPERIENCE_CHOICES = (
-        ('0-2', '0-2 years'),
-        ('3-6', '3-6 years'),
+        ('0-1', '0-1 years'),
+        ('1-3', '1-3 years'),
+        ('3-5', '3-5 years'),
+        ('5-7', '5-7 years'),
         ('7-10', '7-10 years'),
         ('10+', '10+ years'),
     )
@@ -80,14 +82,14 @@ class Job(models.Model):
     min_salary = models.DecimalField(max_digits=10,decimal_places=2,default=0)
     max_salary = models.DecimalField(max_digits=10,decimal_places=2,default=3)
     salary_range = models.CharField(max_length=5,choices=SALARY_CHOICES,default='0-3')
-    work_mode = models.CharField(max_length=10,choices=WORK_MODE_CHOICES,default="wfo")
+    work_mode = models.CharField(max_length=10,choices=WORK_MODE_CHOICES,default="WFO")
     role = models.CharField(max_length=255)
-    experience = models.CharField(max_length=5,choices=EXPERIENCE_CHOICES,default='0-2')
+    experience = models.CharField(max_length=5,choices=EXPERIENCE_CHOICES,default='0-1')
     time_range = models.IntegerField(choices=FRESHNESS_CHOICES,default=0)
     created_at = models.DateTimeField(default=timezone.now)
     posted_time = models.DateTimeField(auto_now_add=True)
     benefits = models.TextField(blank=True, null=True)
-    application_deadline = models.DateField(blank=False, null=False,default=date(2024, 12, 30))
+    application_deadline = models.DateField(blank=False, null=False,default=timezone.now)
     job_category = models.CharField(max_length=100, blank=False, null=False,default="Development/It")
     number_of_openings = models.PositiveIntegerField(default=1)
     status = models.CharField(max_length=10, choices=JOB_STATUS_CHOICES, default='open')
