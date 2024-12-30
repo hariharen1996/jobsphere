@@ -14,7 +14,6 @@ def job_home(request):
     return render(request,'jobs/jobs_home.html',{'title':"jobs_home"})
 
 def dashboard(request):
-
     if request.user.user_type == 'Applicant':
         if hasattr(request.user,'profile'):
             profile = request.user.profile
@@ -36,7 +35,6 @@ def dashboard(request):
 
     data = Job.objects.all()
     
-
     search_query = request.GET.get('search','')
     work_mode_query = request.GET.get('work_mode','')
     salary_range_query = request.GET.getlist('salary_range[]',[])
@@ -130,9 +128,26 @@ def dashboard(request):
         
   
     print(f"Data after filtering: {data}")
-            
-    return render(request,"jobs/dashboard.html",{'title':"job_dashboard","data":data,"search_query":search_query,'work_mode_query':work_mode_query,"salary_range_query":salary_range_query,
-                                                 'location_query':location_query,'role_query':role_query,'experience_query':experience_query,'time_range_query':time_range_query})
+
+    roles = ['Software Development', 'Software Tester', 'Devops', 'Machine Learning', 'Business Development']
+    locations = ['all', 'chennai', 'bengaluru', 'coimbatore', 'madurai', 'delhi', 'hyderabad']
+    salaries = [('0-3', '0-3 Lakhs'), ('3-6', '3-6 Lakhs'), ('6-10', '6-10 Lakhs'), ('10-15', '10-15 Lakhs'), ('15-20', '15-20 Lakhs'), ('20+', '20+ Lakhs')]
+
+
+    return render(request,"jobs/dashboard.html",
+                  {'title':"job_dashboard",
+                   "data":data,
+                   "search_query":search_query,
+                   'work_mode_query':work_mode_query,
+                   "salary_range_query":salary_range_query,
+                   'location_query':location_query,
+                   'role_query':role_query,
+                   'experience_query':experience_query,
+                   'time_range_query':time_range_query,
+                   'roles':roles,
+                   'locations':locations,
+                   'salaries':salaries
+                   })
 
 
 def create_employee(request):

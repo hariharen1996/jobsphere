@@ -1,4 +1,5 @@
 {% extends 'jobs/main.html' %}
+{% load custom_filters %}
 
 {% block content %}
 <main class="mt-5">
@@ -32,7 +33,7 @@
             <div>
                 <span class="fw-bold ml-2">Posted:</span>
                 <span>
-                   {{ job.posted_time|timesince }}
+                   {{ job.posted_time|timesince_without_hrs }} ago
                 </span>
             </div>
             <div>

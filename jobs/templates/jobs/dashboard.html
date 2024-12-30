@@ -1,4 +1,6 @@
 {% extends 'jobs/main.html' %}
+{% load custom_filters %}
+
 
 {% block content %}
 <main>
@@ -24,91 +26,37 @@
             <article class="salary">
                 <p class="fs-4 fw-bold mt-2">Salary</p>
                <form action="{% url 'dashboard' %}" method="GET">
-                <div class="form-check">
-                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="0-3" {% if salary_range_query == '0-3' %} checked {% endif %} id="salaryRange1" > 
-                    <label class="form-check-label" for="defaultCheck1">0-3 Lakhs</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="3-6" {% if salary_range_query == '3-6' %} checked {% endif %} id="salaryRange2">
-                    <label class="form-check-label" for="salaryRange2">3-6 Lakhs</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="6-10" {% if salary_range_query == '6-10' %} checked {% endif %} id="salaryRange3">
-                    <label class="form-check-label" for="salaryRange3">6-10 Lakhs</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="10-15" {% if salary_range_query == '10-15' %} checked {% endif %} id="salaryRange4">
-                    <label class="form-check-label" for="salaryRange4">10-15 Lakhs</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="15-20" {% if salary_range_query == '15-20' %} checked {% endif %} id="salaryRange5">
-                    <label class="form-check-label" for="salaryRange5">15-20 Lakhs</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="salary_range[]" type="checkbox" value="20+" {% if salary_range_query == '20+' %} checked {% endif %} id="salaryRange6">
-                    <label class="form-check-label" for="salaryRange6">20+ Lakhs</label>
-                </div>
+                 {% for key,value in salaries %}    
+                    <div class="form-check">
+                        <input class="form-check-input" name="salary_range[]" type="checkbox" value="{{ key }}" {% if salary_range_query == key %} checked {% endif %} id="salaryRange{{ forloop.counter }}" > 
+                        <label class="form-check-label" for="salaryRange{{ forloop.counter }}">{{ value }}</label>
+                    </div>
+                 {% endfor %}
                 <button type="submit" class="btn btn-primary mt-2">Apply</button>
             </form>
             </article>
             <article class="location">
                 <p class="fs-4 fw-bold mt-2">Location</p>
             <form method="GET" action="{% url 'dashboard' %}">  
-                <div class="form-check">
-                    <input class="form-check-input" name="location[]" type="checkbox" value="all" {% if location_query == 'all' %} checked {% endif %} id="location1">
-                    <label class="form-check-label" for="location1">All</label>
-                </div>  
-                <div class="form-check">
-                    <input class="form-check-input" name="location[]" type="checkbox" value="chennai" {% if location_query == 'chennai' %} checked {% endif %} id="location2">
-                    <label class="form-check-label" for="location2">Chennai</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="location[]" type="checkbox" value="bengaluru" {% if location_query == 'bengaluru' %} checked {% endif %} id="location3">
-                    <label class="form-check-label" for="location3">Bengaluru</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="location[]" type="checkbox" value="coimbatore" {% if location_query == 'coimbatore' %} checked {% endif %} id="location4">
-                    <label class="form-check-label" for="location4">Coimbatore</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="location[]" type="checkbox" value="madurai" {% if location_query == 'madurai' %} checked {% endif %} id="location5">
-                    <label class="form-check-label" for="location5">Madurai</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="location[]" type="checkbox" value="delhi" {% if location_query == 'delhi' %} checked {% endif %} id="location6">
-                    <label class="form-check-label" for="location6">Delhi</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" name="location[]" type="checkbox" value="hyderabad" {% if location_query == 'hyderabad' %} checked {% endif %} id="location7">
-                    <label class="form-check-label" for="location7">Hyderabad</label>
-                </div>
+                {% for location in locations %}  
+                    <div class="form-check">
+                        <input class="form-check-input" name="location[]" type="checkbox" value="{{ location }}" {% if location_query == location %} checked {% endif %} id="location{{ forloop.counter }}">
+                        <label class="form-check-label" for="location{{ forloop.counter }}">{{ location|title }}</label>
+                    </div>  
+                {% endfor %}  
                 <button type="submit" class="btn btn-primary mt-2">Apply</button>
             </form>  
             </article>
             <article class="role">
                 <p class="fs-4 fw-bold mt-2">Role</p>
                 <form action="{% url 'dashboard' %}" method="get" id="roleSubmit">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="Software Development"  {% if role_query == 'Software Development' %} checked {% endif %} name="role" id="role1">
-                    <label class="form-check-label" for="role1">Software Development</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="Software Tester" name="role"  {% if role_query == 'Software Tester' %} checked {% endif %} id="role2">
-                    <label class="form-check-label" for="role2">Software Tester</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="Devops" name="role"  {% if role_query == 'Devops' %} checked {% endif %} id="role3">
-                    <label class="form-check-label" for="role3">Devops</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="Machine Learning" name="role"  {% if role_query == 'Machine Learning' %} checked {% endif %} id="role4">
-                    <label class="form-check-label" for="role4">Machine Learning</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" value="Business Development"  {% if role_query == 'Business Development' %} checked {% endif %} name="role" id="role5">
-                    <label class="form-check-label" for="role5">Business Development</label>
-                </div>
-            </form>
+                    {% for role in roles %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" value="{{ role }}" {% if role_query == role %} checked {% endif %} name="role" id="role{{ forloop.counter }}">
+                            <label class="form-check-label" for="role{{ forloop.counter }}">{{ role }}</label>
+                        </div>
+                    {% endfor %} 
+                </form>
             </article>
             <article class="experience">
                 <p class="fs-4 mt-2 fw-bold">Experience</p>
@@ -204,6 +152,11 @@
                     {% for skill in result.job_related_skills.all %}
                     <p class="text-secondary">{{ skill.name }} .</p>
                     {% endfor %}
+                </div>
+            </article>
+            <article class="mt-2">
+                <div class="time-ago">
+                    {{ result.posted_time|timesince_without_hrs }} ago
                 </div>
             </article>
         </a>
