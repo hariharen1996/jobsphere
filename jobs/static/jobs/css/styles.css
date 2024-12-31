@@ -77,9 +77,42 @@ body::after{
     animation: pop 10s infinite;
 }
 
+.alert-container{
+    position: relative;
+}
+
 .message{
     position: absolute;
-    top: 15%;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    animation: fade 4s forwards;
+    z-index: 10;
+    width: 100%;
+}
+
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+        visibility: visible;
+    }
+    10% {
+        opacity: 1;
+        visibility: visible;
+    }
+    90% {
+        opacity: 1;
+        visibility: visible;
+    }
+    100% {
+        opacity: 0;
+        visibility: hidden;
+        display: none;
+    }
 }
 
 .user-img{
@@ -157,6 +190,18 @@ body::after{
     background: transparent;
     border: none;
     padding: 0;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
 }
 
 @keyframes img{

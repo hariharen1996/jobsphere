@@ -201,6 +201,40 @@ def create_job(request):
     return render(request,'jobs/job_form.html',{'form':form})
 
 
+@login_required
+def update_job(request,id):
+    job = get_object_or_404(Job,id=id)
+
+    if request.user != job.employer.user:
+        messages.error(request,'You are not allowed to update this job.')
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        form = JobForm(request.POST,instance=job)
+        if form.is_valid():
+            form.save()
+            messages.success(request,"Job updated successfully!")
+            return redirect('dashboard')
+    else:
+        form = JobForm(instance=job)
+    
+    return render(request,'jobs/job_form.html',{'form':form})
+
+@login_required
+def delete_job(request,id):
+    job = get_object_or_404(Job,id=id)
+    
+    if request.user != job.employer.user:
+        messages.error(request,'You are not allowed to delete this job.')
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        job.delete()
+        messages.success(request,"Job deleted successfully!")
+        return redirect('dashboard')
+    
+    return redirect('dashboard')
+
 def job_details(request,id):
     jobs = get_object_or_404(Job,id=id)
     http_referer_url = request.META.get('HTTP_REFERER','dashboard')
