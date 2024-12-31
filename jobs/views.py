@@ -1,12 +1,13 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import EmployeeForm,JobForm
-from .models import Employer,Job
+from .models import Employer,Job,SavedJob
 from django.contrib import messages
 from users.models import Profile
 from django.db.models import Q
 from datetime import timedelta
 from django.utils import timezone
+from django.http import Http404
 
 # Create your views here.
 @login_required
@@ -127,12 +128,13 @@ def dashboard(request):
             pass
         
   
-    print(f"Data after filtering: {data}")
+    #print(f"Data after filtering: {data}")
 
     roles = ['Software Development', 'Software Tester', 'Devops', 'Machine Learning', 'Business Development']
     locations = ['all', 'chennai', 'bengaluru', 'coimbatore', 'madurai', 'delhi', 'hyderabad']
     salaries = [('0-3', '0-3 Lakhs'), ('3-6', '3-6 Lakhs'), ('6-10', '6-10 Lakhs'), ('10-15', '10-15 Lakhs'), ('15-20', '15-20 Lakhs'), ('20+', '20+ Lakhs')]
 
+    saved_jobs_id = SavedJob.objects.filter(user=request.user).values_list('job',flat=True)
 
     return render(request,"jobs/dashboard.html",
                   {'title':"job_dashboard",
@@ -146,7 +148,8 @@ def dashboard(request):
                    'time_range_query':time_range_query,
                    'roles':roles,
                    'locations':locations,
-                   'salaries':salaries
+                   'salaries':salaries,
+                   'saved_jobs_id':saved_jobs_id,
                    })
 
 
@@ -200,4 +203,33 @@ def create_job(request):
 
 def job_details(request,id):
     jobs = get_object_or_404(Job,id=id)
-    return render(request,'jobs/job_details.html',{'job':jobs})
+    http_referer_url = request.META.get('HTTP_REFERER','dashboard')
+
+    return render(request,'jobs/job_details.html',{'job':jobs,'http_referer_url':http_referer_url})
+
+
+@login_required
+def save_job(request,job_id):
+    try:
+        job = Job.objects.get(id=job_id)
+    except:
+        raise Http404('Job not found')
+    
+    is_already_saved_jobs = SavedJob.objects.filter(user=request.user,job=job).first()
+
+    if is_already_saved_jobs:
+        is_already_saved_jobs.delete()
+        msg = 'Job removed from saved jobs.'
+    else:
+        SavedJob.objects.create(user=request.user,job=job)
+        msg = 'Job saved successfully'
+    
+    messages.info(request,msg)
+
+    return redirect('dashboard')
+
+@login_required
+def saved_jobs(request):
+    all_saved_jobs = SavedJob.objects.filter(user=request.user)
+
+    return render(request,'jobs/saved_jobs.html',{'all_saved_jobs':all_saved_jobs})

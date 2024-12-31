@@ -153,6 +153,12 @@ body::after{
     width: 50px;
 }
 
+.save-btn{
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
 @keyframes img{
     0%{
         transform: scale(1);
