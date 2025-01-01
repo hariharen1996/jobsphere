@@ -118,8 +118,8 @@
     </form>  
     </div>
 
-    <div class="job-container mt-3 mb-3">
-        {% for result in data %}
+    <div class="job-container mt-3 mb-3">   
+        {% for result in page_data %}
       <div class="m-2 card p-3">  
         <a href="{% url 'job_details' id=result.id %}" class="text-decoration-none text-dark">
             <header class="d-flex justify-content-between align-items-center">
@@ -176,12 +176,14 @@
                     </form>
                 </div>
             </article>
+         {% if user.user_type == 'Recruiter' %}   
             <article class="job-update-delete mt-2">
                 <a href="{% url 'update_job' result.id %}">
                     <button class="btn btn-primary">Edit</button>
                 </a>
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-job-id="{{ result.id }}">Delete</button>
             </article>
+         {% endif %}   
         </a>
     </div>  
 
@@ -205,12 +207,46 @@
             </div>
         </div>
     </div>
-
-
         {% empty %}
             <p class="text-center">No jobs found matching your search.</p>
         {% endfor %}
     </div>
+    
+    <div class="pagination">
+        <nav aria-label="Page navigation">
+            <ul class="pagination border border-secondary rounded shadow justify-content-center align-items-center flex-wrap">
+                {% if page_data.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if work_mode_query %}&work_mode={{ work_mode_query }}{% endif %}{% if salary_range_query %}&salary_range[]={{ salary_range_query|join:'&salary_range[]=' }}{% endif %}{% if location_query %}&location[]={{ location_query|join:'&location[]=' }}{% endif %}{% if role_query %}&role={{ role_query }}{% endif %}{% if experience_query %}&experience={{ experience_query }}{% endif %}{% if time_range_query %}&time_range={{ time_range_query }}{% endif %}" aria-label="First">
+                            <span aria-hidden="true">First</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_data.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if work_mode_query %}&work_mode={{ work_mode_query }}{% endif %}{% if salary_range_query %}&salary_range[]={{ salary_range_query|join:'&salary_range[]=' }}{% endif %}{% if location_query %}&location[]={{ location_query|join:'&location[]=' }}{% endif %}{% if role_query %}&role={{ role_query }}{% endif %}{% if experience_query %}&experience={{ experience_query }}{% endif %}{% if time_range_query %}&time_range={{ time_range_query }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true"><i class="fas fa-step-backward"></i></span>
+                        </a>
+                    </li>
+                {% endif %}
+    
+                <li class="page-item disabled">
+                    <span class="page-link bg-light text-black">Page {{ page_data.number }} of {{ page_data.paginator.num_pages }}</span>
+                </li>
+    
+                {% if page_data.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_data.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if work_mode_query %}&work_mode={{ work_mode_query }}{% endif %}{% if salary_range_query %}&salary_range[]={{ salary_range_query|join:'&salary_range[]=' }}{% endif %}{% if location_query %}&location[]={{ location_query|join:'&location[]=' }}{% endif %}{% if role_query %}&role={{ role_query }}{% endif %}{% if experience_query %}&experience={{ experience_query }}{% endif %}{% if time_range_query %}&time_range={{ time_range_query }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true"><i class="fas fa-step-forward"></i></span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_data.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if work_mode_query %}&work_mode={{ work_mode_query }}{% endif %}{% if salary_range_query %}&salary_range[]={{ salary_range_query|join:'&salary_range[]=' }}{% endif %}{% if location_query %}&location[]={{ location_query|join:'&location[]=' }}{% endif %}{% if role_query %}&role={{ role_query }}{% endif %}{% if experience_query %}&experience={{ experience_query }}{% endif %}{% if time_range_query %}&time_range={{ time_range_query }}{% endif %}" aria-label="Last">
+                            <span aria-hidden="true">Last</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>    
 </main>
 {% endblock %}
 

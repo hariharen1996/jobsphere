@@ -8,6 +8,7 @@ from django.db.models import Q
 from datetime import timedelta
 from django.utils import timezone
 from django.http import Http404
+from django.core.paginator import Paginator
 
 # Create your views here.
 @login_required
@@ -34,7 +35,7 @@ def dashboard(request):
             messages.warning(request, "Please create your employer profile to access the dashboard")
             return redirect('job_home')    
 
-    data = Job.objects.all()
+    data = Job.objects.all().order_by('-created_at')
     
     search_query = request.GET.get('search','')
     work_mode_query = request.GET.get('work_mode','')
@@ -46,48 +47,49 @@ def dashboard(request):
     
     current_time = timezone.now()        
 
+    #print(salary_range_query)
+
 
     if search_query:
         data = Job.objects.filter(
             Q(employer__company_name__icontains=search_query) | Q(location__icontains=search_query) | Q(job_related_skills__name__icontains=search_query)
         ).distinct()
         
-    elif work_mode_query:
+    if work_mode_query:
         data = data.filter(work_mode=work_mode_query)
    
-    elif salary_range_query:
+    if salary_range_query:
         salary = Q()
         for check_salary in salary_range_query:
             if check_salary == '0-3':
                 salary |= Q(min_salary__gte=0,max_salary__lte=3)
-            elif check_salary == '3-6':
+            if check_salary == '3-6':
                 salary |= Q(min_salary__gte=3,max_salary__lte=6)
-            elif check_salary == '6-10':
+            if check_salary == '6-10':
                 salary |= Q(min_salary__gte=6,max_salary__lte=10)
-            elif check_salary == '10-15':
+            if check_salary == '10-15':
                 salary |= Q(min_salary__gte=10,max_salary__lte=15)
-            elif check_salary == '15-20':
+            if check_salary == '15-20':
                 salary |= Q(min_salary__gte=15,max_salary__lte=20)
-            elif check_salary == '20+':
+            if check_salary == '20+':
                 salary |= Q(min_salary__gte=20)
 
         if salary:
-            data = data.filter(salary)        
+            data = data.filter(salary)  
+       
     
-    elif location_query:
+    if location_query:
         location_filter = Q()
         
         if 'all' not in location_query:
             for loc in location_query:
                 location_filter |= Q(location__icontains=loc)
-        
-        if location_filter:
-            data = data.filter(location_filter)
+        data = data.filter(location_filter)
     
-    elif role_query:
+    if role_query:
         data = data.filter(role=role_query)
     
-    elif experience_query:
+    if experience_query:
         try:
             exp = int(experience_query)
             if exp <= 1:
@@ -105,7 +107,7 @@ def dashboard(request):
         except ValueError:
             pass
 
-    elif time_range_query:
+    if time_range_query:
         try:
             time_range_query = int(time_range_query)
             if time_range_query == 0:
@@ -129,6 +131,9 @@ def dashboard(request):
         
   
     #print(f"Data after filtering: {data}")
+    paginator = Paginator(data,5)
+    page_number = request.GET.get('page')
+    page_data = paginator.get_page(page_number)
 
     roles = ['Software Development', 'Software Tester', 'Devops', 'Machine Learning', 'Business Development']
     locations = ['all', 'chennai', 'bengaluru', 'coimbatore', 'madurai', 'delhi', 'hyderabad']
@@ -150,6 +155,7 @@ def dashboard(request):
                    'locations':locations,
                    'salaries':salaries,
                    'saved_jobs_id':saved_jobs_id,
+                   'page_data':page_data
                    })
 
 
