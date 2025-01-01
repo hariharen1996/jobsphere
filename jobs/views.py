@@ -9,6 +9,9 @@ from datetime import timedelta
 from django.utils import timezone
 from django.http import Http404
 from django.core.paginator import Paginator
+from pandas import DataFrame
+from django.http import HttpResponse
+import pytz
 
 # Create your views here.
 @login_required
@@ -273,3 +276,92 @@ def saved_jobs(request):
     all_saved_jobs = SavedJob.objects.filter(user=request.user)
 
     return render(request,'jobs/saved_jobs.html',{'all_saved_jobs':all_saved_jobs})
+
+@login_required
+def export_jobdata_excel(request):
+    if request.user.user_type != 'Recruiter':
+        messages.error(request,'You dont have permission to export job data')
+        return redirect('dashboard')
+    
+    employer = Employer.objects.filter(user=request.user).first()
+
+    if not employer:
+        messages.error(request,'Employer profile not found')
+        return redirect('dashboard')
+
+    data = Job.objects.filter(employer=employer).order_by('-created_at')
+        
+    job_data = []
+
+    for jobs in data:
+        print(jobs)
+
+        employer = jobs.employer
+
+        employer_name = request.user.username
+        company_name = employer.company_name
+        company_website = employer.company_website
+        company_size = employer.company_size
+        employer_email = employer.employer_email
+        employer_contact = employer.employer_contact 
+        social_linkedin = employer.linkedin_url
+        company_description = employer.company_description
+        company_start_date = employer.company_start_date
+        company_headquarters = employer.company_location
+
+        if isinstance(jobs.created_at, timezone.datetime):
+            created_at = jobs.created_at.astimezone(pytz.utc).replace(tzinfo=None)
+        else:
+            created_at = jobs.created_at
+
+        if isinstance(jobs.posted_time, timezone.datetime):
+            posted_time = jobs.posted_time.astimezone(pytz.utc).replace(tzinfo=None)
+        else:
+            posted_time = jobs.posted_time
+
+        if isinstance(jobs.application_deadline, timezone.datetime):
+            application_deadline = jobs.application_deadline.astimezone(pytz.utc).replace(tzinfo=None)
+        else:
+            application_deadline = jobs.application_deadline
+
+
+        job_data.append({
+            'Title': jobs.title,
+            'Description': jobs.description,
+            'Min Salary': jobs.min_salary,
+            'Max Salary': jobs.max_salary,
+            'Salary Range': jobs.salary_range,
+            'Work Mode': jobs.work_mode,
+            'Role': jobs.role,
+            'Experience': jobs.experience,
+            'Posted Time': posted_time,
+            'created_at':created_at,
+            'Application Deadline': application_deadline,
+            'Job Category': jobs.job_category,
+            'Openings': jobs.number_of_openings,
+            'status': jobs.status,
+            'skills': ", ".join([skill.name for skill in jobs.job_related_skills.all()]),
+            'employer_name': employer_name,
+            'employer_email': employer_email,
+            'employer_contact':employer_contact,
+            'social_linkedin': social_linkedin,
+            'company_name':company_name,
+            'company_website':company_website,
+            'company_size': company_size,
+            'company_description':company_description,
+            'company_startdate':company_start_date,
+            'company_headquarters':company_headquarters
+        })
+    
+    df = DataFrame(job_data)
+
+    filename = employer.company_name if employer.company_name else "job_data"
+    filename = filename.replace(" ","_").replace("/","_").replace("\\","_").replace(":","_")
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment;filename={filename}_jobs.xlsx'
+
+
+    df.to_excel(response,index=False,engine='openpyxl')
+
+    return response
