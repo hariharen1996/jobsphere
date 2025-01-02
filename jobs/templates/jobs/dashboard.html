@@ -109,7 +109,10 @@
             <a href="{% url 'export_jobs_excel' %}">
                 <button class="btn btn-primary">Export Jobs Data</button>
             </a>
-      {% endif %} 
+      {% endif %}
+      <a href="{% url 'job_application'%}">
+        <button class="btn btn-primary">View Applied Jobs</button>
+    </a>
     </div>
 
     <div class="search-container mt-3">
@@ -185,9 +188,9 @@
                     <button class="btn btn-primary">Edit</button>
                 </a>
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-job-id="{{ result.id }}">Delete</button>
-            </article>
+            </article> 
          {% endif %}   
-        </a>
+        </a> 
     </div>  
 
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">

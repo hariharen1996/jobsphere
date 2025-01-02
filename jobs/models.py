@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.core.validators import RegexValidator
 from datetime import date
-from users.models import Skill
+from users.models import Skill,Profile
 
 CustomUser = get_user_model()
 
@@ -129,3 +129,16 @@ class SavedJob(models.Model):
 
     def __str__(self):
         return f"{self.user.username} saved {self.job.title}"
+    
+
+class JobApplication(models.Model):
+    applicant = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    job = models.ForeignKey(Job,on_delete=models.CASCADE)
+    profile = models.ForeignKey(Profile,on_delete=models.CASCADE) 
+    applied_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('applicant','job')
+    
+    def __str__(self):
+        return f"{self.applicant.username} applied for {self.job.title}"

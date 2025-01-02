@@ -40,8 +40,12 @@
                 <span class="fw-bold ml-2">Openings:</span>
                 <span>{{ job.number_of_openings }}</span>
             </div>
-            
         </article>
+        <article class="apply-jobs-container mt-3">
+            <a href="{% url 'apply_jobs' job.id %}">
+                <button class="btn btn-primary">Apply</button>
+            </a>
+        </article>  
     </section>
 
     <section class="job-content mt-3 pb-5">

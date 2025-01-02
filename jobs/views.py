@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import EmployeeForm,JobForm
-from .models import Employer,Job,SavedJob
+from .models import Employer,Job,SavedJob,JobApplication
 from django.contrib import messages
 from users.models import Profile
 from django.db.models import Q
@@ -12,6 +12,7 @@ from django.core.paginator import Paginator
 from pandas import DataFrame
 from django.http import HttpResponse
 import pytz
+
 
 # Create your views here.
 @login_required
@@ -365,3 +366,29 @@ def export_jobdata_excel(request):
     df.to_excel(response,index=False,engine='openpyxl')
 
     return response
+
+
+@login_required
+def apply_jobs(request,job_id):
+    if not request.user.is_authenticated:  
+        messages.error(request,"You need to be logged in to apply for job")
+        return redirect('job_home')
+    
+    job = get_object_or_404(Job,id=job_id)
+    profile = get_object_or_404(Profile,user=request.user)
+
+    if JobApplication.objects.filter(applicant=request.user,job=job).exists():
+        messages.warning(request,"You have already applied for this job")
+        return redirect('job_details',id=job_id)
+    
+    JobApplication.objects.create(applicant=request.user,job=job,profile=profile)
+
+
+    messages.success(request,f"Your application for {job.title} has been submitted successfully")
+    return redirect('job_details',id=job_id)
+
+
+@login_required
+def job_applications(request):
+    applications = JobApplication.objects.filter(applicant=request.user).select_related('job')
+    return render(request,'jobs/job_application.html',{'applications':applications})
