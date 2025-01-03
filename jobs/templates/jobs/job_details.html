@@ -41,11 +41,13 @@
                 <span>{{ job.number_of_openings }}</span>
             </div>
         </article>
+    {% if user.user_type == 'Applicant' %}    
         <article class="apply-jobs-container mt-3">
             <a href="{% url 'apply_jobs' job.id %}">
                 <button class="btn btn-primary">Apply</button>
             </a>
         </article>  
+    {% endif %}    
     </section>
 
     <section class="job-content mt-3 pb-5">

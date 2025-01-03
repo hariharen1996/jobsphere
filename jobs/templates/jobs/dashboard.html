@@ -89,7 +89,6 @@
             </article>
         </aside>
     </div>
-
     <div class="filter-nav-btn mt-4 d-flex gap-2 flex-wrap 
     {% if user.user_type == 'Recruiter' %}
         justify-content-center align-items-center
@@ -111,7 +110,9 @@
             </a>
       {% endif %}
       <a href="{% url 'job_application'%}">
-        <button class="btn btn-primary">View Applied Jobs</button>
+        <button class="btn btn-primary">
+            {% if user.user_type == 'Applicant' %} My Applications {% else %} Job Applications Received {% endif %} 
+        </button>
     </a>
     </div>
 
@@ -123,7 +124,17 @@
         </div>
     </form>  
     </div>
-
+    <article class="job-count mt-3 m-2">
+        <p class="fw-bold"> {{ start_index }} - {{ end_index }} of {{ total_jobs }} jobs | 
+            {% if filter_names%}
+                {% for filter_names in filter_names%}
+                    {{ filter_names }} {% if not forloop.last %} {% endif %}
+                {% endfor %}
+            {% else %}
+                No filters applied
+            {% endif %}
+        </p>
+    </article>
     <div class="job-container mt-3 mb-3">   
         {% for result in page_data %}
       <div class="m-2 card p-3">  

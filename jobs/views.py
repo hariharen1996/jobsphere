@@ -19,6 +19,7 @@ import pytz
 def job_home(request):
     return render(request,'jobs/jobs_home.html',{'title':"jobs_home"})
 
+@login_required
 def dashboard(request):
     if request.user.user_type == 'Applicant':
         if hasattr(request.user,'profile'):
@@ -53,14 +54,18 @@ def dashboard(request):
 
     #print(salary_range_query)
 
+    filter_names = []
+
 
     if search_query:
         data = Job.objects.filter(
             Q(employer__company_name__icontains=search_query) | Q(location__icontains=search_query) | Q(job_related_skills__name__icontains=search_query)
         ).distinct()
+        filter_names.append(f'{search_query}')
         
     if work_mode_query:
         data = data.filter(work_mode=work_mode_query)
+        filter_names.append(f'{work_mode_query}')
    
     if salary_range_query:
         salary = Q()
@@ -80,7 +85,7 @@ def dashboard(request):
 
         if salary:
             data = data.filter(salary)  
-       
+        filter_names.append(f'{", ".join(salary_range_query)}')
     
     if location_query:
         location_filter = Q()
@@ -89,9 +94,12 @@ def dashboard(request):
             for loc in location_query:
                 location_filter |= Q(location__icontains=loc)
         data = data.filter(location_filter)
+        filter_names.append(f'{", ".join(location_query)}')
     
     if role_query:
         data = data.filter(role=role_query)
+        filter_names.append(f'{role_query}')
+    
     
     if experience_query:
         try:
@@ -110,6 +118,8 @@ def dashboard(request):
                 data = data.filter(experience='10+')
         except ValueError:
             pass
+        filter_names.append(f'{experience_query} years')
+    
 
     if time_range_query:
         try:
@@ -132,12 +142,15 @@ def dashboard(request):
             data = data.filter(posted_time__gte=time_limit)
         except ValueError:
             pass
-        
+        filter_names.append(f'{time_range_query} days')
   
     #print(f"Data after filtering: {data}")
     paginator = Paginator(data,5)
     page_number = request.GET.get('page')
     page_data = paginator.get_page(page_number)
+    start_index = page_data.start_index()
+    end_index = page_data.end_index()
+    total_jobs = paginator.count
 
     roles = ['Software Development', 'Software Tester', 'Devops', 'Machine Learning', 'Business Development']
     locations = ['all', 'chennai', 'bengaluru', 'coimbatore', 'madurai', 'delhi', 'hyderabad']
@@ -159,12 +172,16 @@ def dashboard(request):
                    'locations':locations,
                    'salaries':salaries,
                    'saved_jobs_id':saved_jobs_id,
-                   'page_data':page_data
+                   'page_data':page_data,
+                   'start_index':start_index,
+                   'end_index':end_index,
+                    'total_jobs':total_jobs,
+                    'filter_names':filter_names
                    })
 
 
+@login_required
 def create_employee(request):
-
     if request.user.user_type == 'Applicant':
         return redirect('job_home')
 
@@ -180,9 +197,8 @@ def create_employee(request):
     
     return render(request,'jobs/employee_form.html', {'form':form})
 
-
+@login_required
 def create_job(request):
-
     if request.user.user_type == 'Applicant':
         return redirect('job_home')
 
@@ -245,6 +261,7 @@ def delete_job(request,id):
     
     return redirect('dashboard')
 
+@login_required
 def job_details(request,id):
     jobs = get_object_or_404(Job,id=id)
     http_referer_url = request.META.get('HTTP_REFERER','dashboard')
@@ -407,6 +424,11 @@ def job_applications(request):
 
 @login_required
 def update_jobapplication_skills(request,id):  
+
+    if request.user.user_type == 'Recruiter':
+        return redirect('dashboard')
+
+
     job_application = get_object_or_404(JobApplication,id=id,applicant=request.user)
     
     if request.method == 'POST':
