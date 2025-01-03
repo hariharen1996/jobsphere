@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .forms import EmployeeForm,JobForm
+from .forms import EmployeeForm,JobForm,UpdateJobApplicationForm
 from .models import Employer,Job,SavedJob,JobApplication
 from django.contrib import messages
 from users.models import Profile
@@ -376,19 +376,46 @@ def apply_jobs(request,job_id):
     
     job = get_object_or_404(Job,id=job_id)
     profile = get_object_or_404(Profile,user=request.user)
+    company = job.employer
+    
+    if job.application_deadline > timezone.now().date():
+        pass
+    else:
+        messages.warning(request,f"Application deadline for this job {job.title} has passed")
+        return redirect('dashboard')
+    
+    if JobApplication.objects.filter(applicant=request.user,job__employer=company).exists():
+        messages.warning(request,f"You have already applied for a job at {company.company_name} company")
+        return redirect('dashboard')
 
     if JobApplication.objects.filter(applicant=request.user,job=job).exists():
-        messages.warning(request,"You have already applied for this job")
-        return redirect('job_details',id=job_id)
+        messages.warning(request,"You cant apply multiple times for same specific job")
+        return redirect('dashboard')
     
     JobApplication.objects.create(applicant=request.user,job=job,profile=profile)
 
 
     messages.success(request,f"Your application for {job.title} has been submitted successfully")
-    return redirect('job_details',id=job_id)
+    return redirect('dashboard')
 
 
 @login_required
 def job_applications(request):
     applications = JobApplication.objects.filter(applicant=request.user).select_related('job')
     return render(request,'jobs/job_application.html',{'applications':applications})
+
+
+@login_required
+def update_jobapplication_skills(request,id):  
+    job_application = get_object_or_404(JobApplication,id=id,applicant=request.user)
+    
+    if request.method == 'POST':
+        form = UpdateJobApplicationForm(request.POST,instance=job_application)
+        if form.is_valid():
+            form.save()
+            messages.success(request,"Your skills have been updated successfully")
+            return redirect('job_application')
+    else:
+        form = UpdateJobApplicationForm(instance=job_application)
+    
+    return render(request,'jobs/update_application_skills.html',{'form':form,'job_application':job_application})

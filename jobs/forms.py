@@ -1,5 +1,5 @@
 from django import forms
-from .models import Employer,Job
+from .models import Employer,Job,JobApplication
 from django.core.exceptions import ValidationError
 import logging 
 from users.models import Skill
@@ -52,3 +52,14 @@ class JobForm(forms.ModelForm):
             'benefits': forms.Textarea(attrs={'placeholder':"Enter any benefits provided by company"}),
             'job_category': forms.TextInput(attrs={'placeholder':"Enter job category"})
         }  
+
+
+
+class UpdateJobApplicationForm(forms.ModelForm):
+    class Meta:
+        model = JobApplication
+        fields = ['jobapplication_skills']
+        widgets = {
+            'jobapplication_skills': forms.CheckboxSelectMultiple(),
+        }
+        

@@ -13,6 +13,7 @@ urlpatterns = [
     path('delete_job/<int:id>/',views.delete_job,name='delete_job'),
     path('export_jobs_excel/',views.export_jobdata_excel,name='export_jobs_excel'),
     path('apply_jobs/<int:job_id>/',views.apply_jobs,name='apply_jobs'),
-    path('job_application/',views.job_applications,name='job_application')
+    path('job_application/',views.job_applications,name='job_application'),
+    path('update_application_skills/<int:id>/',views.update_jobapplication_skills,name='update_application_skills')
 ]
  

@@ -130,12 +130,23 @@ class SavedJob(models.Model):
     def __str__(self):
         return f"{self.user.username} saved {self.job.title}"
     
+class JobApplicationSkills(models.Model):
+    job_application_skills = models.CharField(max_length=200)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['job_application_skills'],name="unique_jobapp_skills")
+        ]
+
+    def __str__(self):
+        return self.job_application_skills    
 
 class JobApplication(models.Model):
     applicant = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     job = models.ForeignKey(Job,on_delete=models.CASCADE)
     profile = models.ForeignKey(Profile,on_delete=models.CASCADE) 
     applied_at = models.DateTimeField(auto_now_add=True)
+    jobapplication_skills = models.ManyToManyField(JobApplicationSkills,related_name="job_applications",blank=True)
 
     class Meta:
         unique_together = ('applicant','job')
