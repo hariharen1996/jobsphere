@@ -153,3 +153,22 @@ class JobApplication(models.Model):
     
     def __str__(self):
         return f"{self.applicant.username} applied for {self.job.title}"
+
+
+class Review(models.Model):
+    employer = models.ForeignKey(Employer,on_delete=models.CASCADE)
+    applicant = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Review by {self.applicant.username} for {self.employer.company_name}"
+
+class Reply(models.Model):
+    comment = models.ForeignKey(Review,on_delete=models.CASCADE,related_name="reviews")
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Reply by {self.user.username} to {self.comment.applicant.username}'s review"

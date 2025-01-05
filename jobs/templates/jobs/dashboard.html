@@ -138,15 +138,30 @@
     <div class="job-container mt-3 mb-3">   
         {% for result in page_data %}
       <div class="m-2 card p-3">  
-        <a href="{% url 'job_details' id=result.id %}" class="text-decoration-none text-dark">
-            <header class="d-flex justify-content-between align-items-center">
+            <header class="d-flex justify-content-start align-items-center">
                 <div>
-                    <h3 class="fw-bold fs-3">{{ result.employer.company_name }}</h3>
-                    <p class="fs-5">{{ result.title }}</p>
+                  <a href="{% url 'job_details' id=result.id %}" class="text-decoration-none text-dark">
+           
+                    <h3 class="fs-3 fw-bold">
+                        {{ result.title }}
+                    </h3>
+                </a>
+           
+                    <p class="fs-5 text-muted">
+                        {{ result.employer.company_name }} 
+                        | 
+                        <a href="{% url 'company_reviews' result.employer.id %}" class="text-primary review-link">
+                            Review
+                        </a>
+                    </p>
+                    
+                    
                 </div>
-                <img src="{{ result.employer.company_logo.url }}" alt="{{ employer.company_name }}"
-                    class="company-logo" />
+                
+                <img src="{{ result.employer.company_logo.url }}" alt="{{ result.employer.company_name }} Logo" 
+                     class="company-logo ms-auto" />
             </header>
+            
             <article class="d-flex gap-4 flex-wrap">
                 <div>
                     <span class="ml-2"><i class="fas fa-suitcase"></i></span>
@@ -200,8 +215,7 @@
                 </a>
                 <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-job-id="{{ result.id }}">Delete</button>
             </article> 
-         {% endif %}   
-        </a> 
+         {% endif %}    
     </div>  
 
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">

@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import EmployeeForm,JobForm,UpdateJobApplicationForm
-from .models import Employer,Job,SavedJob,JobApplication
+from .models import Employer,Job,SavedJob,JobApplication,Review,Reply
 from django.contrib import messages
 from users.models import Profile
 from django.db.models import Q
@@ -441,3 +441,51 @@ def update_jobapplication_skills(request,id):
         form = UpdateJobApplicationForm(instance=job_application)
     
     return render(request,'jobs/update_application_skills.html',{'form':form,'job_application':job_application})
+
+@login_required
+def company_reviews(request, employer_id):
+    employer = get_object_or_404(Employer, id=employer_id)
+    comments = Review.objects.filter(employer=employer).order_by('-created_at')
+    replies = Reply.objects.filter(comment__in=comments)
+
+    if request.method == 'POST':
+        if 'submit_review' in request.POST:
+            content = request.POST.get('comment')
+            if content:
+                Review.objects.create(
+                    employer=employer,
+                    applicant=request.user,
+                    content=content,
+                )
+                messages.success(request, "Your review has been posted!")
+                return redirect('company_reviews', employer_id=employer_id)
+
+        elif 'reply_comment' in request.POST:
+            comment_id = int(request.POST.get('comment_id'))
+            content = request.POST.get('reply')
+            comment = get_object_or_404(Review, id=comment_id)
+
+            if comment.applicant == request.user:
+                messages.warning(request, "You cannot reply to your own review.")
+                return redirect('company_reviews', employer_id=employer_id)
+
+            if request.user != comment.employer.user:
+                if request.user.user_type == 'Recruiter':
+                    messages.warning(request, "You can only reply to reviews for your own company.")
+                    return redirect('company_reviews', employer_id=employer.id)
+
+            if content:
+                Reply.objects.create(
+                    comment=comment,
+                    user=request.user,
+                    content=content
+                )
+                messages.success(request, "Your reply has been posted!")
+                return redirect('company_reviews', employer_id=employer.id)
+
+    context = {
+        'employer': employer,
+        'comments': comments,
+        'replies': replies,
+    }
+    return render(request, 'jobs/company_reviews.html', context)

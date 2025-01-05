@@ -1,0 +1,90 @@
+{% extends 'jobs/main.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<main>
+    <div class="container mt-4">
+        <h2>Reviews for {{ employer.company_name }}</h2>
+
+    {% if user.user_type == 'Applicant' %}
+        <h3 class="mt-4">Leave a Review</h3>
+        <form method="POST" class="border p-4 rounded shadow-sm">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="comment" class="form-label">Your Review:</label>
+                <textarea name="comment" class="form-control" rows="4" required></textarea>
+            </div>
+            <button type="submit" name="submit_review" class="btn btn-primary">Submit Review</button>
+        </form>
+    {% endif %}
+    
+    <div class="mt-5">
+        <h4 class="mb-3">All Reviews</h4>
+
+        {% for comment in comments %}
+            <div class="border p-3 mb-3 rounded shadow-sm">
+                <div class="d-flex gap-2 m-0">
+                    <img src="{{ comment.applicant.profile.image.url }}" alt="comment.applicant.username" class="profile-img" />
+                    <div>
+                        <p class="m-0">
+                            <span class="fs-5"> @{{ comment.applicant.username }}</span>
+                            <small class="text-secondary">{{ comment.created_at|timesince_without_hrs }} ago</small>
+                        </p>
+                        <p class="m-0">{{ comment.content }}</p>
+                    </div>
+                </div>
+
+                <form method="POST" class="mt-3 d-none" id="reply-form-{{ comment.id }}">
+                    {% csrf_token %}
+                    <input type="hidden" name="comment_id" value="{{ comment.id }}">
+                    <div class="mb-3">
+                        <label for="reply" class="form-label">Your Reply:</label>
+                        <textarea name="reply" class="form-control" rows="3"></textarea>
+                    </div>
+                    <button type="submit" name="reply_comment" class="btn btn-secondary">Submit</button>
+                </form>
+
+                <div class="d-flex gap-2 mt-3">  
+                    <button type="button" class="btn btn-secondary rounded reply-btn" data-id="{{ comment.id }}">Reply</button>
+                </div>
+
+                {% for reply in replies %}
+                    {% if reply.comment == comment %}
+                        <div class="mt-3 ms-4 p-3 border rounded shadow-sm bg-light">
+                            <div class="d-flex gap-2 m-0">
+                                <img src="{{ reply.user.profile.image.url }}" alt="reply.user.username" class="profile-img" />
+                                <div>
+                                    <p class="m-0">
+                                        <span class="fs-5"> @{{ reply.user.username }}
+                                            {% if user.user_type == 'Recruiter' %} (Recruiter) {% endif %}
+                                        </span>
+                                        <small class="text-secondary">{{ reply.created_at|timesince_without_hrs }} ago</small>
+                                    </p>
+                                    <p class="m-0">{{ reply.content }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% empty %}
+            <p>No reviews yet.</p>
+        {% endfor %}
+    </div>
+</div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let replyBtn = document.querySelectorAll('.reply-btn');
+    replyBtn.forEach((btn) => {
+        btn.addEventListener('click', function() {
+            let commentId = this.getAttribute('data-id');
+            let form = document.getElementById('reply-form-' + commentId);
+            
+            form.classList.toggle('d-none');
+        });
+    });
+</script>
+{% endblock %}
