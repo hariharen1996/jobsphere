@@ -169,6 +169,26 @@ class Reply(models.Model):
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.PositiveIntegerField(default=0)
+    dislikes = models.PositiveIntegerField(default=0)
+
+    def get_users_reaction(self,user):
+        return self.reactions.filter(user=user).first()
 
     def __str__(self):
         return f"Reply by {self.user.username} to {self.comment.applicant.username}'s review"
+    
+
+
+class UserReactions(models.Model):
+    REACTION_CHOICES = [
+        ('like','Like'),
+        ('dislike','Dislike')
+    ]
+
+    reply = models.ForeignKey(Reply,on_delete=models.CASCADE,related_name='reactions')
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
+    reaction = models.CharField(max_length=7,choices=REACTION_CHOICES)
+
+    def __str__(self):
+        return f'{self.user.username} reacted with {self.reaction} to a reply'

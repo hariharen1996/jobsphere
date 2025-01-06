@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .forms import EmployeeForm,JobForm,UpdateJobApplicationForm
-from .models import Employer,Job,SavedJob,JobApplication,Review,Reply
+from .models import Employer,Job,SavedJob,JobApplication,Review,Reply,UserReactions
 from django.contrib import messages
 from users.models import Profile
 from django.db.models import Q
@@ -442,6 +442,7 @@ def update_jobapplication_skills(request,id):
     
     return render(request,'jobs/update_application_skills.html',{'form':form,'job_application':job_application})
 
+
 @login_required
 def company_reviews(request, employer_id):
     employer = get_object_or_404(Employer, id=employer_id)
@@ -482,6 +483,47 @@ def company_reviews(request, employer_id):
                 )
                 messages.success(request, "Your reply has been posted!")
                 return redirect('company_reviews', employer_id=employer.id)
+
+        elif 'like_reply' in request.POST or 'dislike_reply' in request.POST:
+            reply_id = int(request.POST.get('reply_id'))
+            reaction_type = 'like' if 'like_reply' in request.POST else 'dislike'
+            reply = get_object_or_404(Reply, id=reply_id)
+
+            if request.user.user_type == 'Recruiter':
+                if reply.comment.employer != request.user.employer:
+                    messages.warning(request, "You can only react to replies for your own company.")
+                    return redirect('company_reviews', employer_id=employer.id)
+
+
+            user_reaction = reply.get_users_reaction(request.user)
+
+            if user_reaction:
+                if user_reaction.reaction == reaction_type:
+                    user_reaction.delete()
+                    if reaction_type == 'like':
+                        reply.likes -= 1
+                    elif reaction_type == 'dislike':
+                        reply.dislikes -= 1
+                else:
+                    user_reaction.reaction = reaction_type
+                    user_reaction.save()
+
+                    if reaction_type == 'like':
+                        reply.likes += 1
+                        if reply.dislikes > 0:
+                            reply.dislikes -= 1  
+                    elif reaction_type == 'dislike':
+                        reply.dislikes += 1
+                        if reply.likes > 0:
+                            reply.likes -= 1  
+            else:
+                UserReactions.objects.create(reply=reply, user=request.user, reaction=reaction_type)
+                if reaction_type == 'like':
+                    reply.likes += 1
+                elif reaction_type == 'dislike':
+                    reply.dislikes += 1
+
+            reply.save()
 
     context = {
         'employer': employer,

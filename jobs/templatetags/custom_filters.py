@@ -17,3 +17,8 @@ def timesince_without_hrs(value):
     
     #print(time_sp)
     return ' '.join(time_sp).strip(",")
+
+
+@register.filter(name='get_reaction')
+def get_reaction(reactions, reply_id):
+    return reactions.get(reply_id)
