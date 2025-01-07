@@ -446,6 +446,11 @@ def update_jobapplication_skills(request,id):
 @login_required
 def company_reviews(request, employer_id):
     employer = get_object_or_404(Employer, id=employer_id)
+    
+    if request.user.user_type == 'Recruiter' and not hasattr(request.user, 'employer'):
+        messages.error(request, "You need to have an associated employer to manage reviews.")
+        return redirect('profile') 
+    
     comments = Review.objects.filter(employer=employer).order_by('-created_at')
     replies = Reply.objects.filter(comment__in=comments)
 
@@ -463,21 +468,30 @@ def company_reviews(request, employer_id):
 
         elif 'reply_comment' in request.POST:
             comment_id = int(request.POST.get('comment_id'))
+            parent_reply_id = request.POST.get('parent_reply_id') 
             content = request.POST.get('reply')
+            
             comment = get_object_or_404(Review, id=comment_id)
-
             if comment.applicant == request.user:
                 messages.warning(request, "You cannot reply to your own review.")
-                return redirect('company_reviews', employer_id=employer_id)
+                return redirect('company_reviews', employer_id=employer.id)
 
-            if request.user != comment.employer.user:
-                if request.user.user_type == 'Recruiter':
-                    messages.warning(request, "You can only reply to reviews for your own company.")
+            if request.user != comment.employer.user and request.user.user_type == 'Recruiter':
+                messages.warning(request, "You can only reply to reviews for your own company.")
+                return redirect('company_reviews', employer_id=employer.id)
+
+            if parent_reply_id:
+                parent_reply = get_object_or_404(Reply, id=parent_reply_id)
+                if parent_reply.user == request.user:
+                    messages.warning(request, "You cannot reply to your own reply.")
                     return redirect('company_reviews', employer_id=employer.id)
+            else:
+                parent_reply = None  
 
             if content:
                 Reply.objects.create(
                     comment=comment,
+                    parent=parent_reply, 
                     user=request.user,
                     content=content
                 )
@@ -493,7 +507,6 @@ def company_reviews(request, employer_id):
                 if reply.comment.employer != request.user.employer:
                     messages.warning(request, "You can only react to replies for your own company.")
                     return redirect('company_reviews', employer_id=employer.id)
-
 
             user_reaction = reply.get_users_reaction(request.user)
 
@@ -511,11 +524,11 @@ def company_reviews(request, employer_id):
                     if reaction_type == 'like':
                         reply.likes += 1
                         if reply.dislikes > 0:
-                            reply.dislikes -= 1  
+                            reply.dislikes -= 1
                     elif reaction_type == 'dislike':
                         reply.dislikes += 1
                         if reply.likes > 0:
-                            reply.likes -= 1  
+                            reply.likes -= 1
             else:
                 UserReactions.objects.create(reply=reply, user=request.user, reaction=reaction_type)
                 if reaction_type == 'like':

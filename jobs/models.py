@@ -165,7 +165,8 @@ class Review(models.Model):
         return f"Review by {self.applicant.username} for {self.employer.company_name}"
 
 class Reply(models.Model):
-    comment = models.ForeignKey(Review,on_delete=models.CASCADE,related_name="reviews")
+    comment = models.ForeignKey(Review,on_delete=models.CASCADE,related_name="reviews",null=True,blank=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, related_name='replies', null=True, blank=True)
     user = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
