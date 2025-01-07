@@ -538,6 +538,41 @@ def company_reviews(request, employer_id):
 
             reply.save()
 
+        elif 'like_review' in request.POST or 'dislike_review' in request.POST:
+            review_id = int(request.POST.get('review_id'))
+            reaction_type = 'like' if 'like_review' in request.POST else 'dislike'
+            review = get_object_or_404(Review, id=review_id)
+
+            user_reaction = review.get_users_reaction(request.user)
+
+            if user_reaction:
+                if user_reaction.reaction == reaction_type:
+                    user_reaction.delete()
+                    if reaction_type == 'like':
+                        review.likes -= 1
+                    elif reaction_type == 'dislike':
+                        review.dislikes -= 1
+                else:
+                    user_reaction.reaction = reaction_type
+                    user_reaction.save()
+
+                    if reaction_type == 'like':
+                        review.likes += 1
+                        if review.dislikes > 0:
+                            review.dislikes -= 1
+                    elif reaction_type == 'dislike':
+                        review.dislikes += 1
+                        if review.likes > 0:
+                            review.likes -= 1
+            else:
+                UserReactions.objects.create(review=review, user=request.user, reaction=reaction_type)
+                if reaction_type == 'like':
+                    review.likes += 1
+                elif reaction_type == 'dislike':
+                    review.dislikes += 1
+
+            review.save()
+
     context = {
         'employer': employer,
         'comments': comments,
