@@ -626,6 +626,42 @@ def company_reviews(request, employer_id):
             nested_reply.save()
             messages.success(request, 'Your nested reply has been updated!')
             return redirect('company_reviews', employer_id=employer_id)
+        
+        elif 'delete_review' in request.POST:
+            review_id = int(request.POST.get('review_id'))
+            review = get_object_or_404(Review, id=review_id)
+
+            if review.applicant != request.user:
+                messages.error(request, 'You can only delete your own reviews!')
+            else:
+                review.delete()
+                messages.success(request, 'Your review has been deleted!')
+
+            return redirect('company_reviews', employer_id=employer.id)
+
+        elif 'delete_reply' in request.POST:
+            reply_id = int(request.POST.get('reply_id'))
+            reply = get_object_or_404(Reply, id=reply_id)
+
+            if reply.user != request.user:
+                messages.error(request, 'You can only delete your own replies!')
+            else:
+                reply.delete()
+                messages.success(request, 'Your reply has been deleted!')
+
+            return redirect('company_reviews', employer_id=employer.id)
+
+        elif 'delete_nested_reply' in request.POST:
+            nested_reply_id = int(request.POST.get('nested_reply_id'))
+            nested_reply = get_object_or_404(Reply, id=nested_reply_id)
+
+            if nested_reply.user != request.user:
+                messages.error(request, 'You can only delete your own nested replies!')
+            else:
+                nested_reply.delete()
+                messages.success(request, 'Your nested reply has been deleted!')
+
+            return redirect('company_reviews', employer_id=employer.id)
 
     context = {
         'employer': employer,
