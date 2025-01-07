@@ -573,6 +573,60 @@ def company_reviews(request, employer_id):
 
             review.save()
 
+        elif 'edit_review' in request.POST:
+            review_id = int(request.POST.get('review_id'))
+            content = request.POST.get('content')
+            review = get_object_or_404(Review,id=review_id)
+
+            if review.applicant != request.user:
+                messages.error(request,'You can only edit your own reviews!')
+                return redirect('company_reviews',employer_id=employer_id)
+
+            if not content:
+                messages.error(request,f"Review cannot be empty")
+                return redirect('company_reviews',employer_id=employer_id)
+
+            review.content = content
+            review.save()
+            messages.success(request,"You review has been updated!")
+            return redirect('company_reviews',employer_id=employer_id)
+
+        elif 'edit_reply' in request.POST:
+            reply_id = int(request.POST.get('reply_id'))
+            content = request.POST.get('content')
+            reply = get_object_or_404(Reply, id=reply_id)
+
+            if reply.user != request.user:
+                messages.error(request, 'You can only edit your own replies!')
+                return redirect('company_reviews', employer_id=employer_id)
+
+            if not content:
+                messages.error(request, 'Reply cannot be empty!')
+                return redirect('company_reviews', employer_id=employer_id)
+
+            reply.content = content
+            reply.save()
+            messages.success(request, 'Your reply has been updated!')
+            return redirect('company_reviews', employer_id=employer_id)
+
+        elif 'edit_nested_reply' in request.POST:
+            nested_reply_id = int(request.POST.get('nested_reply_id'))
+            content = request.POST.get('content')
+            nested_reply = get_object_or_404(Reply, id=nested_reply_id)
+
+            if nested_reply.user != request.user:
+                messages.error(request, 'You can only edit your own nested replies!')
+                return redirect('company_reviews', employer_id=employer_id)
+
+            if not content:
+                messages.error(request, 'Reply cannot be empty!')
+                return redirect('company_reviews', employer_id=employer_id)
+
+            nested_reply.content = content
+            nested_reply.save()
+            messages.success(request, 'Your nested reply has been updated!')
+            return redirect('company_reviews', employer_id=employer_id)
+
     context = {
         'employer': employer,
         'comments': comments,
