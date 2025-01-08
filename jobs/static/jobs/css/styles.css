@@ -212,6 +212,21 @@ body::after{
     font-size: 1px;
 }
 
+.star-filled{
+    color: gold;
+    font-size: 1.2rem;
+}
+
+.star-empty{
+    color: gray;
+    font-size: 1.2rem;
+}
+
+.star{
+    font-size: 1.3rem;
+    cursor: pointer;
+}
+
 @keyframes img{
     0%{
         transform: scale(1);

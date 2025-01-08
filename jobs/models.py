@@ -156,12 +156,21 @@ class JobApplication(models.Model):
 
 
 class Review(models.Model):
+    RATING_CHOICES = [
+        (1, 'Bad'),
+        (2, 'Poor'),
+        (3, 'Good'),
+        (4, 'Average'),
+        (5, 'Excellent')
+    ]
     employer = models.ForeignKey(Employer,on_delete=models.CASCADE)
     applicant = models.ForeignKey(CustomUser,on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.PositiveIntegerField(default=0)
     dislikes = models.PositiveIntegerField(default=0)
+    rate_review = models.IntegerField(choices=RATING_CHOICES, default=3)  
+
 
     def get_users_reaction(self, user):
         return self.reactions.filter(user=user).first()

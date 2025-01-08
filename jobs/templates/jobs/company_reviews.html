@@ -17,6 +17,18 @@
                 <label for="comment" class="form-label">Your Review:</label>
                 <textarea name="comment" class="form-control" rows="4" required></textarea>
             </div>
+            <div class="mb-3">
+                <label class="form-label">Rating:</label>
+                <div class="star-rating">
+                    <span class="star" data-value="1">&#9733;</span>
+                    <span class="star" data-value="2">&#9733;</span>
+                    <span class="star" data-value="3">&#9733;</span>
+                    <span class="star" data-value="4">&#9733;</span>
+                    <span class="star" data-value="5">&#9733;</span>
+                </div>
+                <input type="hidden" name="rating" id="rating" value="3">
+                <p id="star-message">Rating: Good</p>
+            </div>
             <button type="submit" name="submit_review" class="btn btn-primary">Submit Review</button>
         </form>
         {% endif %}
@@ -43,6 +55,18 @@
                         <p class="m-0">
                             <span class="fs-5"> @{{ comment.applicant.username }}</span>
                             <small class="text-secondary">{{ comment.created_at|timesince_without_hrs }} ago</small>
+                        </p>
+                        <p class="m-0"> 
+                            {% for i in range_of_values %}
+                                {% if i <= comment.rate_review %}
+                                    <span class="star-filled">&#9733;</span> 
+                                {% else %}
+                                    <span class="star-empty">&#9734;</span>  
+                                {% endif %}
+                            {% endfor %}
+                            <span id="star-message-{{ comment.id }}">
+                                {{comment.rate_review|rating_smiley}}
+                            </span>
                         </p>
                         <p class="m-0 text-secondary">{{ comment.content }}</p>
                     </div>
@@ -202,6 +226,10 @@
         const cancelEditBtns = document.querySelectorAll('.cancel-edit');
         const editReplyBtns = document.querySelectorAll('.edit-reply-btn');
         const editNestedReplyBtns = document.querySelectorAll('.edit-nested-reply-btn');
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+        const starMessage = document.getElementById('star-message');
+        const starMessages = ["Bad", "Poor", "Good", "Average", "Excellent"];
         
         replyBtns.forEach((btn) => {
             btn.addEventListener('click', function () {
@@ -240,6 +268,19 @@
                 form.classList.add('d-none');
             });
         });
-    });
+
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                const ratingValue = index + 1; 
+                ratingInput.value = ratingValue;
+                stars.forEach((s, i) => {
+                    s.style.color = i < ratingValue ? 'gold' : 'gray';
+                });
+                starMessage.textContent = `Rating: ${starMessages[ratingValue - 1]}`;
+            });
+        });
+
+
+    });    
 </script>
 {% endblock %}

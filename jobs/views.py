@@ -457,11 +457,14 @@ def company_reviews(request, employer_id):
     if request.method == 'POST':
         if 'submit_review' in request.POST:
             content = request.POST.get('comment')
+            rating = int(request.POST.get('rating'))
+            print(rating)
             if content:
                 Review.objects.create(
                     employer=employer,
                     applicant=request.user,
                     content=content,
+                    rate_review=rating
                 )
                 messages.success(request, "Your review has been posted!")
                 return redirect('company_reviews', employer_id=employer_id)
@@ -663,9 +666,11 @@ def company_reviews(request, employer_id):
 
             return redirect('company_reviews', employer_id=employer.id)
 
+    range_of_values = range(1,6)
     context = {
         'employer': employer,
         'comments': comments,
         'replies': replies,
+        'range_of_values':range_of_values
     }
     return render(request, 'jobs/company_reviews.html', context)
