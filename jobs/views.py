@@ -12,7 +12,11 @@ from django.core.paginator import Paginator
 from pandas import DataFrame
 from django.http import HttpResponse
 import pytz
-
+from django.core.mail import send_mail
+from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import EmailMessage
+import mimetypes
 
 # Create your views here.
 @login_required
@@ -410,6 +414,43 @@ def apply_jobs(request,job_id):
         return redirect('dashboard')
     
     JobApplication.objects.create(applicant=request.user,job=job,profile=profile)
+
+    subject_applicant = f"Job Application Confirmation for {job.title}"
+    message_applicant = f"Dear {request.user.username},\n\n" \
+                        f"Your application for the job '{job.title}' at {company.company_name} has been successfully submitted.\n" \
+                        f"Best of luck with your application!\n\n" \
+                        f"Regards,\nJobSphere Team"
+    recipient_applicant = request.user.email
+    send_mail(subject_applicant, message_applicant, settings.DEFAULT_FROM_EMAIL, [recipient_applicant])
+
+    subject_recruiter = f"New Job Application for {job.title}"
+    message_recruiter = f"Dear {company.user.username},\n\n" \
+                       f"New application has been received for the job '{job.title}' from {request.user.username}.\n" \
+                       f"Applicant's email: {request.user.email}\n" \
+                       f"Profile details: {profile}\n\n" \
+                       f"Regards,\nJobSphere Team"
+    recipient_employer = company.employer_email  
+
+    try:
+        resume_file = profile.resume
+        email = EmailMessage(
+            subject_recruiter,
+            message_recruiter,
+            settings.DEFAULT_FROM_EMAIL,
+            [recipient_employer]
+        )
+        
+        if resume_file:
+            mime_type, _ = mimetypes.guess_type(resume_file.name)
+            if mime_type is None:
+                mime_type = 'application/octet-stream'
+            
+            email.attach(resume_file.name, resume_file.read(), mime_type)
+        
+        email.send()
+    except ObjectDoesNotExist:
+        messages.error(request, "Error: Profile does not have a resume attached.")
+        return redirect('dashboard')
 
 
     messages.success(request,f"Your application for {job.title} has been submitted successfully")

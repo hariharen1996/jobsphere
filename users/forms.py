@@ -20,7 +20,7 @@ WIDGETS = {
 
 
 class CustomUserForm(UserCreationForm):
-    email = forms.EmailField(required=True,widget=forms.EmailInput(attrs=WIDGETS['email']))
+    email = forms.EmailField(required=True,widget=forms.EmailInput(attrs=WIDGETS['email']),help_text="Enter a valid email (e.g., Gmail, Yahoo) to receive job application updates.")
     user_type = forms.ChoiceField(choices=CustomUser.USER_TYPE_CHOICES,label='Account')
 
     
