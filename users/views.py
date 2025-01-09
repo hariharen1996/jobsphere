@@ -3,6 +3,10 @@ from .forms import CustomUserForm,LoginForm,CustomUserUpdateForm,ProfileUpdateFo
 from django.contrib.auth import login,authenticate,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import views as auth_views
+from .mixins import RedirectAuthenticatedUserMixin
+
 
 # Create your views here.
 def user_login(request):
@@ -74,3 +78,16 @@ def user_profile(request):
     }    
 
     return render(request,"users/profile.html",context)
+
+
+class PasswordResetView(RedirectAuthenticatedUserMixin,auth_views.PasswordResetView):
+    template_name = 'users/password_reset.html'
+
+class PasswordResetDoneView(RedirectAuthenticatedUserMixin, auth_views.PasswordResetDoneView):
+    template_name = 'users/password_reset_done.html'
+
+class PasswordResetConfirmView(RedirectAuthenticatedUserMixin, auth_views.PasswordResetConfirmView):
+    template_name = 'users/password_reset_confirm.html'
+
+class PasswordResetCompleteView(RedirectAuthenticatedUserMixin, auth_views.PasswordResetCompleteView):
+    template_name = 'users/password_reset_complete.html'
