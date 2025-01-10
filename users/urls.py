@@ -16,5 +16,5 @@ urlpatterns = [
 
     path('api/login-api/',api_views.login_view,name='login_api'),
     path('api/register-api/',api_views.register_view,name='register_api'),
-    
+    path('api/logout-api/',api_views.logout_view,name='logout-api')
 ]

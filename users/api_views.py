@@ -7,6 +7,10 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.conf import settings
 from django.utils import timezone
+from django.shortcuts import redirect
+from django.contrib.auth import logout
+from django.http import JsonResponse
+
 
 @api_view(['POST'])
 def register_view(request):
@@ -69,3 +73,33 @@ def login_view(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def logout_view(request):
+    try:
+        refresh_token = request.COOKIES.get('refresh_token')
+        print(f"refresh_token: {refresh_token}")
+        
+        if not refresh_token:
+            return Response({"error": "No refresh token found in cookies"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            token = RefreshToken(refresh_token)
+            print(f"Token created: {token}")
+            token.blacklist()
+            print("Token blacklisted successfully.")
+        except Exception as e:
+            print(f"Error blacklisting token: {e}")
+            return Response({"error": "Invalid refresh token"}, status=status.HTTP_400_BAD_REQUEST)
+
+        response = Response({"message": "Logged out successfully"})
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        logout(request)
+        
+        return response
+
+    except Exception as e:
+        print(f"Error during logout: {e}")
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

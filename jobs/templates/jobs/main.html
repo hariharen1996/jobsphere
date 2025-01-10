@@ -13,8 +13,6 @@
 
   <link rel="stylesheet" type="text/css" href="{% static 'jobs/css/styles.css' %}" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
-
 </head>
 
 <body>
@@ -24,7 +22,7 @@
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <i class="fas fa-bars text-white"></i>
-        
+
       </button>
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul
@@ -36,7 +34,7 @@
           </li>
           {% if user.is_authenticated %}
           <li class="nav-item">
-            <form action="{% url 'logout' %}" method="POST">
+            <form action="{% url 'logout' %}" method="POST" id="logoutForm">
               {% csrf_token %}
               <button type="submit" class="btn btn-dark text-white">
                 Logout
@@ -44,15 +42,15 @@
             </form>
           </li>
           <li class="nav-item">
-           {% if user.user_type == 'Applicant' %} 
+            {% if user.user_type == 'Applicant' %}
             <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
               <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-img">
             </a>
-           {% else %}
-           <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
-            <img src="{{ user.employer.employer_image.url }}" alt="{{ user.username }}" class="profile-img">
-          </a>
-          {% endif %}
+            {% else %}
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+              <img src="{{ user.employer.employer_image.url }}" alt="{{ user.username }}" class="profile-img">
+            </a>
+            {% endif %}
           </li>
           {% else %}
           <li class="nav-item">
@@ -77,16 +75,18 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-        {% if user.user_type == 'Applicant' %}  
-            {% include 'jobs/applicant_profile.html' %}
-        {% else %}
-            {% include 'jobs/employer_profile.html' %}
-        {% endif %}
+          {% if user.user_type == 'Applicant' %}
+          {% include 'jobs/applicant_profile.html' %}
+          {% else %}
+          {% include 'jobs/employer_profile.html' %}
+          {% endif %}
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           <button type="button" class="btn btn-dark">
-            <a href="{% if user.user_type == 'Applicant' %} {% url 'profile' %} {% else %} {% url 'create_employee' %} {% endif %}" class="text-decoration-none text-white">{% if user.user_type == 'Applicant' %} Edit Profile {% else %} Edit Employer {% endif %}</a>
+            <a href="{% if user.user_type == 'Applicant' %} {% url 'profile' %} {% else %} {% url 'create_employee' %} {% endif %}"
+              class="text-decoration-none text-white">{% if user.user_type == 'Applicant' %} Edit Profile {% else %}
+              Edit Employer {% endif %}</a>
           </button>
         </div>
       </div>
@@ -110,9 +110,49 @@
   </div>
   {% bootstrap_javascript %}
 
-  {% block scripts %}
-  <script src="{% static 'jobs/js/main.js' %}"></script>
-  {% endblock %}
+  {% block scripts %}{% endblock %}
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        const messages = document.querySelectorAll('.message');
+        messages.forEach(msg => {
+          msg.style.opacity = 0;
+        });
+      }, 2000);
+
+      const logoutForm = document.getElementById('logoutForm');
+      if (logoutForm) {
+        logoutForm.addEventListener('submit', async (e) => {
+          e.preventDefault(); 
+
+          const CSRFToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+          try {
+            const response = await fetch('/users/api/logout-api/', {
+              method: "POST",
+              credentials: 'same-origin',
+              headers: {
+                'X-CSRFToken': CSRFToken
+              }
+            });
+
+            const responseData = await response.json();
+            console.log(responseData);
+
+            if (response.ok && responseData.message === 'Logged out successfully') {
+              window.location.href = '/users/login/'; 
+            } else {
+              console.error('Logout failed', responseData);
+            }
+          } catch (error) {
+            console.error('Error during logout:', error);
+          }
+        });
+      }
+    });
+
+  </script>
 
 </body>
 

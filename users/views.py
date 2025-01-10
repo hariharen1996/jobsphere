@@ -23,7 +23,6 @@ def user_register(request):
     return render(request,'users/register.html',{'title': 'RegisterPage','form':form})
 
 def user_logout(request):
-    logout(request)
     messages.warning(request,f"You have been logged out!😕")
     return redirect('login')
 
