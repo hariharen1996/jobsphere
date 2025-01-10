@@ -35,22 +35,32 @@ class CustomUserForm(UserCreationForm):
         model = CustomUser
         fields = ['username','email','user_type','password1','password2']
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if CustomUser.objects.filter(email=email).exists():
-            raise forms.ValidationError('Email already exists')
-        return email
+    # def clean_email(self):
+    #     email = self.cleaned_data.get('email')
+    #     if CustomUser.objects.filter(email=email).exists():
+    #         raise forms.ValidationError('Email already exists')
+    #     return email
     
-    def clean_password(self):
-        password = self.cleaned_data.get('password')
-        if not re.search(r'[A-Z]',password):
-            raise ValidationError('Password must contain atleat one uppercase letter')
-        if not re.search(r'[0-9]',password):
-            raise ValidationError('Password must contain atleast one digit')
-        if not re.search(r'[@#$!%*?&^()]',password):
-            raise ValidationError('Password must contain atleast one special character')
-        if not re.search(r'[a-z]',password):
-            raise ValidationError('Password must contain atleast one lowercase letter')
+    # def clean_password(self):
+    #     password = self.cleaned_data.get('password')
+    #     if not re.search(r'[A-Z]',password):
+    #         raise ValidationError('Password must contain atleat one uppercase letter')
+    #     if not re.search(r'[0-9]',password):
+    #         raise ValidationError('Password must contain atleast one digit')
+    #     if not re.search(r'[@#$!%*?&^()]',password):
+    #         raise ValidationError('Password must contain atleast one special character')
+    #     if not re.search(r'[a-z]',password):
+    #         raise ValidationError('Password must contain atleast one lowercase letter')
+    
+    # def clean_password2(self):
+    #     password1 = self.cleaned_data.get('password1')
+    #     password2 = self.cleaned_data.get('password2')
+
+    #     if password1 != password2:
+    #         raise forms.ValidationError("Passwords must match.")
+    #     return password2
+
+    
 
 class LoginForm(AuthenticationForm):
     username = forms.CharField(max_length=254,widget=forms.TextInput(attrs={'placeholder':'Enter your username'}))

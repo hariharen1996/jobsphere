@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from . import api_views
 
 urlpatterns = [
     path('login/',views.user_login,name='login'),
@@ -13,4 +13,8 @@ urlpatterns = [
     path('password-reset/done/', views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('password-reset-confirm/<uidb64>/<token>/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('password-reset-complete/', views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+
+    path('api/login-api/',api_views.login_view,name='login_api'),
+    path('api/register-api/',api_views.register_view,name='register_api'),
+    
 ]

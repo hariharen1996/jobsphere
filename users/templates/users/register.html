@@ -6,14 +6,109 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-md-6">
-                <form method="post" class="bg-white p-4 shadow rounded">
+                <form method="post" class="bg-white p-4 shadow rounded" id="registerForm">
                     {% csrf_token %}
                     {{ form|crispy }}
-                    <button type="submit" class="btn btn-dark">SignUp</button>
+                    <button type="submit" class="btn btn-primary auth-btn" id="submitBtn">SignUp</button>
                     <p class="mt-2">Already have an account? <a href="{% url 'login' %}" class="link">SignIn</a></p>
                 </form>
             </div>
         </div>
     </div>
 </main>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const registerForm = document.getElementById('registerForm');
+    const submitButton = document.getElementById('submitBtn');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    let debounce = false;
+
+    function showError(field, errors) {
+        errors.forEach(errorMessage => {
+            const errorElement = document.createElement('div');
+            errorElement.classList.add('invalid-feedback');
+            errorElement.textContent = errorMessage;
+            field.parentElement.appendChild(errorElement);
+        });
+        field.classList.add('is-invalid');
+    }
+
+    registerForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        if (debounce) return;
+
+        debounce = true;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Submitting...';
+
+        const errorElements = document.querySelectorAll('.invalid-feedback');
+        errorElements.forEach(element => element.remove());
+        const inputFields = registerForm.querySelectorAll('input, select');
+        inputFields.forEach(field => field.classList.remove('is-invalid'));
+
+        const formData = new FormData(registerForm);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+            const apiData = await fetch('/users/api/register-api/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify(data),
+            });
+
+            const response = await apiData.json();
+
+            if (apiData.ok) {
+                alert('User registered successfully');
+                window.location.href = '/users/login/';
+            } else {
+                const errors = response.errors || {};
+
+                if (errors.non_field_errors) {
+                    const passwordFields = registerForm.querySelectorAll('[name="password1"], [name="password2"]');
+                    passwordFields.forEach(field => {
+                        field.classList.add('is-invalid');
+                        showError(field, errors.non_field_errors);
+                    });
+                }
+
+                if (errors.password) {
+                    const passwordFields = registerForm.querySelectorAll('[name="password1"], [name="password2"]');
+                    passwordFields.forEach(field => {
+                        field.classList.add('is-invalid');
+                        showError(field, errors.password);
+                    });
+                }
+
+                Object.keys(errors).forEach(field => {
+                    if (field !== 'non_field_errors' && field !== 'password') {
+                        const errorMessages = errors[field];
+                        const fieldElement = registerForm.querySelector(`[name=${field}]`);
+
+                        if (fieldElement) {
+                            fieldElement.classList.add('is-invalid');
+                            showError(fieldElement, errorMessages);
+                        }
+                    }
+                });
+
+                alert(`Registration failed: ${response.message || 'Unknown error'}`);
+            }
+        } catch (error) {
+            console.error(error);
+            alert('An error occurred while submitting the form: ' + error.message);
+        } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = 'SignUp';
+            debounce = false;
+        }
+    });
+</script>
 {% endblock %}

@@ -1,15 +1,15 @@
-*{
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
-body{
+body {
     background-color: #fff;
 }
 
-body::after{
+body::after {
     content: '';
     border-top-left-radius: 80% 100%;
     border-top-right-radius: 80% 100%;
@@ -21,16 +21,16 @@ body::after{
     height: 100vh;
 }
 
-.navbar{
+.navbar {
     background-color: rgb(117, 80, 250);
-    box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.navbar-brand:hover{
+.navbar-brand:hover {
     color: #ffff99;
 }
 
-.navbar-brand{
+.navbar-brand {
     text-transform: uppercase;
     transition: all 0.3s ease;
     color: #ffff99;
@@ -43,45 +43,45 @@ body::after{
     object-fit: cover;
 }
 
-.btn{
-    box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+.btn {
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.profile-content p{
+.profile-content p {
     margin: 0;
 }
 
-.profile-details .profile-img{
+.profile-details .profile-img {
     width: 60px;
     height: 60px;
 }
 
-.nav-border{
+.nav-border {
     border-top: 1px solid #ffff99;
     border-bottom: 1px solid #ffff99;
 }
 
-.home-container{
+.home-container {
     display: flex;
     justify-content: flex-start;
     align-items: center;
     min-height: 80vh;
 }
 
-.main-title{
+.main-title {
     width: 600px;
 }
 
-.pop{
+.pop {
     display: inline-block;
     animation: pop 10s infinite;
 }
 
-.alert-container{
+.alert-container {
     position: relative;
 }
 
-.message{
+.message {
     position: absolute;
     top: 20px;
     left: 50%;
@@ -100,14 +100,17 @@ body::after{
         opacity: 0;
         visibility: visible;
     }
+
     10% {
         opacity: 1;
         visibility: visible;
     }
+
     90% {
         opacity: 1;
         visibility: visible;
     }
+
     100% {
         opacity: 0;
         visibility: hidden;
@@ -115,18 +118,18 @@ body::after{
     }
 }
 
-.user-img{
+.user-img {
     width: 80px;
     height: 80px;
     object-fit: cover;
 }
 
-.highlight-profile-img{
-    box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+.highlight-profile-img {
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
     animation: img infinite ease-in-out forwards;
 }
 
-.cert-img{
+.cert-img {
     height: 5rem;
     object-fit: cover;
 }
@@ -149,7 +152,7 @@ body::after{
     z-index: 100;
 }
 
-.filter-container{
+.filter-container {
     position: fixed;
     top: 0;
     left: 0;
@@ -163,7 +166,7 @@ body::after{
     overflow: scroll;
 }
 
-.show .filter-container{
+.show .filter-container {
     transform: translateX(0);
 }
 
@@ -182,11 +185,11 @@ body::after{
     transition: transform 0.5s ease;
 }
 
-.company-logo{
+.company-logo {
     width: 50px;
 }
 
-.save-btn{
+.save-btn {
     background: transparent;
     border: none;
     padding: 0;
@@ -204,68 +207,85 @@ body::after{
     border: 1px solid #f5c6cb;
 }
 
-.review-link{
+.review-link {
     font-size: 1.2rem;
 }
 
-.time-text{
+.time-text {
     font-size: 1px;
 }
 
-.star-filled{
+.star-filled {
     color: gold;
     font-size: 1.2rem;
 }
 
-.star-empty{
+.star-empty {
     color: gray;
     font-size: 1.2rem;
 }
 
-.star{
+.star {
     font-size: 1.3rem;
     cursor: pointer;
 }
 
-@keyframes img{
-    0%{
+.invalid-feedback {
+    display: block;
+    color: red;
+}
+
+
+.auth-btn {
+    background: #084298;
+    color: white;
+}
+
+@keyframes img {
+    0% {
         transform: scale(1);
         border: 3px solid transparent;
         box-shadow: 0 0 5px #f1f1f1;
     }
-    50%{
+
+    50% {
         transform: scale(1.05);
         border: 3px solid transparent;
         box-shadow: 0 0 15px #ffff99;
     }
-    100%{
+
+    100% {
         transform: scale(1);
         border: 3px solid #ffff99;
         box-shadow: 0 0 10px #f1f1f1;
     }
-    
+
 }
 
-@keyframes pop{
-    0%{
+@keyframes pop {
+    0% {
         transform: translateY(0);
     }
-    30%{
+
+    30% {
         transform: translateY(-10px);
     }
-    50%{
+
+    50% {
         transform: translateY(0);
     }
-    70%{
+
+    70% {
         transform: translateY(-5px);
     }
-    100%{
+
+    100% {
         transform: translateY(0);
     }
 }
 
-@media screen and (min-width:556px){
-    .message{
+@media screen and (min-width:556px) {
+    .message {
         left: 50%;
         transform: translateX(-50%);
     }
