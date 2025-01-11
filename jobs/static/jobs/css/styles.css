@@ -241,6 +241,11 @@ body::after {
     color: white;
 }
 
+.alert-reset{
+    background-color: #084298;
+    color: #fff;
+}
+
 @keyframes img {
     0% {
         transform: scale(1);

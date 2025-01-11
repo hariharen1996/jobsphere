@@ -9,12 +9,17 @@ urlpatterns = [
     path('register/',views.user_register,name='register'),
     path('logout/',views.user_logout,name='logout'),
     path('profile/',views.user_profile,name='profile'),
-    path('password-reset/', views.PasswordResetView.as_view(), name='password_reset'),
-    path('password-reset/done/', views.PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('password-reset-confirm/<uidb64>/<token>/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('password-reset-complete/', views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    # path('password-reset/', views.PasswordResetView.as_view(), name='password_reset'),
+    # path('password-reset/done/', views.PasswordResetDoneView.as_view(), name='password_reset_done'),
+    # path('password-reset-confirm/<uidb64>/<token>/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    # path('password-reset-complete/', views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
     path('api/login-api/',api_views.login_view,name='login_api'),
     path('api/register-api/',api_views.register_view,name='register_api'),
-    path('api/logout-api/',api_views.logout_view,name='logout-api')
+    path('api/logout-api/',api_views.logout_view,name='logout-api'),
+    path('api/password-reset-api/', api_views.PasswordResetView.as_view(), name='password_reset_api'),
+    path('api/password-reset-api/done/', api_views.PasswordResetDoneView.as_view(), name='password_reset_done_api'),
+    path('api/password-reset-confirm-api/<uidb64>/<token>/',api_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm_api'),
+    path('api/password-reset-complete-api/', api_views.PasswordResetCompleteView.as_view(), name='password_reset_complete_api'),
+
 ]
