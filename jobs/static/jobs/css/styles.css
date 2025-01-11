@@ -22,7 +22,7 @@ body::after {
 }
 
 .navbar {
-    background-color: rgb(117, 80, 250);
+    background-color: #084298;
     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
 }
 
@@ -30,10 +30,15 @@ body::after {
     color: #ffff99;
 }
 
+
 .navbar-brand {
     text-transform: uppercase;
     transition: all 0.3s ease;
     color: #ffff99;
+}
+
+.main-btn{
+    background:  hsl(205, 86%, 17%);
 }
 
 .profile-img {
@@ -130,7 +135,7 @@ body::after {
 }
 
 .cert-img {
-    height: 5rem;
+    height: 3rem;
     object-fit: cover;
 }
 

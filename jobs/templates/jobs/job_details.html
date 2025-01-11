@@ -4,7 +4,7 @@
 {% block content %}
 <main class="mt-5">
   <a href="{{ http_referer_url }}" class="text-decoration-none">  
-    <button class="btn btn-warning text-white"><i class="fas fa-backward"></i> Back</button>
+    <button class="btn btn-outline-dark"><i class="fas fa-backward"></i> Back</button>
 </a> 
     <section class="job-container card p-4 mt-3">
         <header class="d-flex justify-content-between align-items-center">
@@ -44,7 +44,7 @@
     {% if user.user_type == 'Applicant' %}    
         <article class="apply-jobs-container mt-3">
             <a href="{% url 'apply_jobs' job.id %}">
-                <button class="btn btn-primary">Apply</button>
+                <button class="btn btn-primary main-btn">Apply <i class="far fa-paper-plane"></i> </button>
             </a>
         </article>  
     {% endif %}    

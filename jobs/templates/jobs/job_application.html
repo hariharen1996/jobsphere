@@ -6,7 +6,7 @@
         Job Applications
     </h1>
     <a href="{% url 'dashboard' %}" class="text-decoration-none">  
-        <button class="btn btn-warning text-white"><i class="fas fa-backward"></i> Back</button>
+        <button class="btn btn-outline-dark"><i class="fas fa-backward"></i> Back</button>
     </a> 
     <div class="table-responsive">
         <table class="table table-bordered shadow mt-2">
@@ -80,7 +80,7 @@
                     <td class="text-nowrap">{{ application.applied_at }}</td>
                 {% if user.user_type == 'Applicant' %}   
                     <td class="text-nowrap">
-                        <a href="{% url 'update_application_skills' id=application.id %}" class="btn btn-primary btn-sm">
+                        <a href="{% url 'update_application_skills' id=application.id %}" class="btn btn-outline-primary btn-sm">
                             Add|update Skills
                         </a>
                     </td>

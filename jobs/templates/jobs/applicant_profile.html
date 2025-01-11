@@ -34,13 +34,15 @@
 
     {% if user.profile.certification.all %}
     <span class="fw-bold mt-2">Certifications: </span>
-    <ul class="mt-2">
+    <ul class="mt-2 list-unstyled list-group">
       {% for cert in user.profile.certification.all %}
-      <li>
-        <p class="fs-4 mt-2">CertificationName: {{ cert.name|upper }}</p>
+      <li class="list-group-item mb-2 shadow">
         <div>
           {% if cert.cert_image %}
+        <div>
+          <span class="mt-2">{{ cert.name }} | </span>
           <img src="{{ cert.cert_image.url }}" class="img-fluid cert-img" />
+        </div> 
           {% else %}
           <p>No Image available for this certification</p>
           {% endif %}

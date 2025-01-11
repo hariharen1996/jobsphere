@@ -32,7 +32,7 @@
                         <label class="form-check-label" for="salaryRange{{ forloop.counter }}">{{ value }}</label>
                     </div>
                  {% endfor %}
-                <button type="submit" class="btn btn-primary mt-2">Apply</button>
+                <button type="submit" class="btn btn-outline-dark mt-2"><i class="fas fa-sort-alpha-up"></i> Sort</button>
             </form>
             </article>
             <article class="location">
@@ -44,7 +44,7 @@
                         <label class="form-check-label" for="location{{ forloop.counter }}">{{ location|title }}</label>
                     </div>  
                 {% endfor %}  
-                <button type="submit" class="btn btn-primary mt-2">Apply</button>
+                <button type="submit" class="btn btn-outline-dark mt-2"><i class="fas fa-sort-alpha-up"></i> Sort</button>
             </form>  
             </article>
             <article class="role">
@@ -95,23 +95,23 @@
     {% else %}
         justify-content-end
     {% endif %}">
-        <button class="btn btn-primary" id="filter-open">
+        <button class="btn btn-outline-dark" id="filter-open">
             <i class="fas fa-filter"></i>
         </button>
         <a href="{% url 'saved_jobs' %}">
-            <button class="btn btn-primary">Saved Jobs</button>
+            <button class="btn btn-outline-dark"><i class="fas fa-share-square"></i> Saved Jobs</button>
         </a>
       {% if user.user_type == 'Recruiter' %}  
             <a href="{% url 'create_job' %}">
-                <button class="btn btn-primary">Create Job</button>
+                <button class="btn btn-outline-dark"><i class="fas fa-plus"></i> Create Job</button>
             </a>
             <a href="{% url 'export_jobs_excel' %}">
-                <button class="btn btn-primary">Export Jobs Data</button>
+                <button class="btn btn-outline-dark"><i class="fas fa-file-export"></i> Export Jobs Data</button>
             </a>
       {% endif %}
       <a href="{% url 'job_application'%}">
-        <button class="btn btn-primary">
-            {% if user.user_type == 'Applicant' %} My Applications {% else %} Job Applications Received {% endif %} 
+        <button class="btn btn-outline-dark">
+            {% if user.user_type == 'Applicant' %} <i class="fas fa-database"></i> My Applications {% else %} <i class="fas fa-database"></i> Job Applications Received {% endif %} 
         </button>
     </a>
     </div>
@@ -150,8 +150,8 @@
                     <p class="fs-5 text-muted">
                         {{ result.employer.company_name }} 
                         | 
-                        <a href="{% url 'company_reviews' result.employer.id %}" class="text-primary review-link">
-                            Review
+                        <a href="{% url 'company_reviews' result.employer.id %}" class="review-link">
+                           <button class="btn btn-primary main-btn"><i class="fas fa-comments"></i></button> 
                         </a>
                     </p>
                     
@@ -211,9 +211,9 @@
          {% if user.user_type == 'Recruiter' %}   
             <article class="job-update-delete mt-2">
                 <a href="{% url 'update_job' result.id %}">
-                    <button class="btn btn-primary">Edit</button>
+                    <button class="btn btn-outline-dark"><i class="fas fa-edit"></i> Edit Jobs</button>
                 </a>
-                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-job-id="{{ result.id }}">Delete</button>
+                <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-job-id="{{ result.id }}"><i class="fas fa-trash"></i> Delete Jobs</button>
             </article> 
          {% endif %}    
     </div>  

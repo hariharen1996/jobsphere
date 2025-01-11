@@ -84,12 +84,6 @@ class ProfileUpdateForm(forms.ModelForm):
         required=True
     )
 
-    certifications = forms.ModelMultipleChoiceField(
-        queryset=Certification.objects.all(),
-        widget=forms.CheckboxSelectMultiple(),
-        required=False
-    )
-
     certification_name = forms.CharField(
         max_length=255,
         label="Certification Name",
@@ -109,7 +103,7 @@ class ProfileUpdateForm(forms.ModelForm):
 
     class Meta:
         model = Profile 
-        fields = ['image','bio','skills','education','cgpa','work_experience','resume','location','certifications','certification_name','certification_image']
+        fields = ['image','bio','skills','education','cgpa','work_experience','resume','location','certification_name','certification_image']
         widgets = {
             'bio': forms.Textarea(attrs=WIDGETS['bio']),
             'location': forms.TextInput(attrs=WIDGETS['location']),
@@ -127,9 +121,6 @@ class ProfileUpdateForm(forms.ModelForm):
         if skills:
             profile.skills.set(skills)
         
-        certifications = self.cleaned_data.get('certifications')
-        if certifications:
-            profile.certification.set(certifications)
         
         certification_name = self.cleaned_data.get('certification_name')
         certification_image = self.cleaned_data.get('certification_image')
@@ -175,19 +166,13 @@ class ProfileUpdateForm(forms.ModelForm):
             if not certification_image.name.endswith(('.png','.jpg','.jpeg')):
                 raise forms.ValidationError('Only jpg,png,jpeg files are allowed') 
         return certification_image   
-    
-    def clean_certifications(self):
-        certifications = self.cleaned_data.get('certifications')
-        if certifications and len(certifications) > 5:
-            raise forms.ValidationError('A profile can have only upto 5 certifications')
-        return certifications
+
 
     def clean(self):
-        certifications = self.cleaned_data.get('certifications')
         certification_name = self.cleaned_data.get('certification_name')
         certification_image = self.cleaned_data.get('certification_image')
         
-        if not certifications and (not certification_name or not certification_image):
+        if (not certification_name or not certification_image):
             raise forms.ValidationError('You must either select an existing certification or provide a new certification name and image.')
 
 
