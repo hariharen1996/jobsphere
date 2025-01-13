@@ -8,7 +8,7 @@ from django.db.models import Q
 from datetime import timedelta
 from django.utils import timezone
 from django.http import Http404
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator,EmptyPage,InvalidPage
 from pandas import DataFrame
 from django.http import HttpResponse
 import pytz
@@ -17,6 +17,8 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 import mimetypes
+import requests
+from datetime import datetime
 
 # Create your views here.
 @login_required
@@ -44,143 +46,98 @@ def dashboard(request):
             messages.warning(request, "Please create your employer profile to access the dashboard")
             return redirect('job_home')    
 
-    data = Job.objects.all().order_by('-created_at')
-    
-    search_query = request.GET.get('search','')
-    work_mode_query = request.GET.get('work_mode','')
-    salary_range_query = request.GET.getlist('salary_range[]',[])
-    location_query = request.GET.getlist('location[]',[])
-    role_query = request.GET.get('role','')
-    experience_query = request.GET.get('experience','')
-    time_range_query = request.GET.get('time_range',0)
-    
-    current_time = timezone.now()        
+    api_url = settings.JOBS_API
+    params = {
+        'search': request.GET.get('search', ''),
+        'work_mode': request.GET.get('work_mode', ''),
+        'salary_range[]': request.GET.getlist('salary_range[]', []),
+        'location[]': request.GET.getlist('location[]', []),
+        'role': request.GET.get('role', ''),
+        'experience': request.GET.get('experience', ''),
+        'time_range': request.GET.get('time_range', ''),
+    }
 
-    #print(salary_range_query)
+    try:
+        response = requests.get(api_url, params=params)
+        #print(response)
+        response.raise_for_status() 
+        api_response = response.json()  
+        #print(api_response)
+        job_data = api_response.get('jobs', []) 
+        job_data = sorted(job_data,key=lambda x: x['created_at'],reverse=True)
+        #print(job_data)
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching data from API: {e}")
+        job_data = []
+    except ValueError as e:
+        print(f"Invalid data received from API: {e}")
+        job_data = []
+
+   
+    if not job_data:
+        paginator = Paginator([], 5)  
+    else:
+        paginator = Paginator(job_data, 5) 
+
+    page_number = request.GET.get('page')
+    #print(page_number)
+    try:
+        page_data = paginator.get_page(page_number)
+    except (EmptyPage, InvalidPage):
+        page_data = paginator.get_page(1)
+
+    start_index = (page_data.number - 1) * paginator.per_page + 1
+    end_index = start_index + len(page_data) - 1
+    total_jobs = paginator.count
+    #print(start_index,end_index,total_jobs)
 
     filter_names = []
 
+    if request.GET.get('search'):
+        filter_names.append(f"Search: {request.GET.get('search')}")
+    if request.GET.get('work_mode'):
+        filter_names.append(f"Work Mode: {request.GET.get('work_mode')}")
+    if request.GET.getlist('salary_range[]'):
+        filter_names.append(f"Salary Range: {', '.join(request.GET.getlist('salary_range[]'))}")
+    if request.GET.getlist('location[]'):
+        filter_names.append(f"Location: {', '.join(request.GET.getlist('location[]'))}")
+    if request.GET.get('role'):
+        filter_names.append(f"Role: {request.GET.get('role')}")
+    if request.GET.get('experience'):
+        filter_names.append(f"Experience: {request.GET.get('experience')} years")
+    if request.GET.get('time_range'):
+        filter_names.append(f"Time Range: {request.GET.get('time_range')} days")
 
-    if search_query:
-        data = Job.objects.filter(
-            Q(employer__company_name__icontains=search_query) | Q(location__icontains=search_query) | Q(job_related_skills__name__icontains=search_query)
-        ).distinct()
-        filter_names.append(f'{search_query}')
-        
-    if work_mode_query:
-        data = data.filter(work_mode=work_mode_query)
-        filter_names.append(f'{work_mode_query}')
-   
-    if salary_range_query:
-        salary = Q()
-        for check_salary in salary_range_query:
-            if check_salary == '0-3':
-                salary |= Q(min_salary__gte=0,max_salary__lte=3)
-            if check_salary == '3-6':
-                salary |= Q(min_salary__gte=3,max_salary__lte=6)
-            if check_salary == '6-10':
-                salary |= Q(min_salary__gte=6,max_salary__lte=10)
-            if check_salary == '10-15':
-                salary |= Q(min_salary__gte=10,max_salary__lte=15)
-            if check_salary == '15-20':
-                salary |= Q(min_salary__gte=15,max_salary__lte=20)
-            if check_salary == '20+':
-                salary |= Q(min_salary__gte=20)
 
-        if salary:
-            data = data.filter(salary)  
-        filter_names.append(f'{", ".join(salary_range_query)}')
-    
-    if location_query:
-        location_filter = Q()
-        
-        if 'all' not in location_query:
-            for loc in location_query:
-                location_filter |= Q(location__icontains=loc)
-        data = data.filter(location_filter)
-        filter_names.append(f'{", ".join(location_query)}')
-    
-    if role_query:
-        data = data.filter(role=role_query)
-        filter_names.append(f'{role_query}')
-    
-    
-    if experience_query:
-        try:
-            exp = int(experience_query)
-            if exp <= 1:
-                data = data.filter(experience='0-1')
-            elif exp <= 3:
-                data = data.filter(experience='1-3')
-            elif exp <= 5:
-                data = data.filter(experience='3-5')
-            elif exp <= 7:
-                data = data.filter(experience='5-7')
-            elif exp <= 10:
-                data = data.filter(experience='7-10')
-            else:
-                data = data.filter(experience='10+')
-        except ValueError:
-            pass
-        filter_names.append(f'{experience_query} years')
-    
 
-    if time_range_query:
-        try:
-            time_range_query = int(time_range_query)
-            if time_range_query == 0:
-                time_limit = current_time - timedelta(hours=1)
-            elif time_range_query == 1:
-                time_limit = current_time - timedelta(days=1)
-            elif time_range_query == 3:
-                time_limit = current_time - timedelta(days=3)
-            elif time_range_query == 7:
-                time_limit = current_time - timedelta(days=7) 
-            elif time_range_query == 15:
-                time_limit = current_time - timedelta(days=15)
-            elif time_range_query == 30:
-                time_limit = current_time - timedelta(days=30) 
-            else:
-                time_limit = current_time
 
-            data = data.filter(posted_time__gte=time_limit)
-        except ValueError:
-            pass
-        filter_names.append(f'{time_range_query} days')
-  
-    #print(f"Data after filtering: {data}")
-    paginator = Paginator(data,5)
-    page_number = request.GET.get('page')
-    page_data = paginator.get_page(page_number)
-    start_index = page_data.start_index()
-    end_index = page_data.end_index()
-    total_jobs = paginator.count
-
+    
     roles = ['Software Development', 'Software Tester', 'Devops', 'Machine Learning', 'Business Development']
     locations = ['all', 'chennai', 'bengaluru', 'coimbatore', 'madurai', 'delhi', 'hyderabad']
     salaries = [('0-3', '0-3 Lakhs'), ('3-6', '3-6 Lakhs'), ('6-10', '6-10 Lakhs'), ('10-15', '10-15 Lakhs'), ('15-20', '15-20 Lakhs'), ('20+', '20+ Lakhs')]
 
     saved_jobs_id = SavedJob.objects.filter(user=request.user).values_list('job',flat=True)
 
+            
+
     return render(request,"jobs/dashboard.html",
                   {'title':"job_dashboard",
-                   "data":data,
-                   "search_query":search_query,
-                   'work_mode_query':work_mode_query,
-                   "salary_range_query":salary_range_query,
-                   'location_query':location_query,
-                   'role_query':role_query,
-                   'experience_query':experience_query,
-                   'time_range_query':time_range_query,
                    'roles':roles,
                    'locations':locations,
                    'salaries':salaries,
                    'saved_jobs_id':saved_jobs_id,
-                   'page_data':page_data,
-                   'start_index':start_index,
-                   'end_index':end_index,
-                    'total_jobs':total_jobs,
-                    'filter_names':filter_names
+                   'job_data':page_data,
+                   'search_query':params['search'],
+                   'work_mode_query': params['work_mode'],
+                   'salary_range_query':params['salary_range[]'],
+                    'location_query':params['location[]'],
+                    'role_query': params['role'],
+                    'experience_query':params['experience'],
+                    'time_range_query':params['time_range'],
+                    'start_index':start_index,
+                    'end_index':end_index,
+                    'total_jobs':total_jobs,      
+                    'filter_names':filter_names             
                    })
 
 

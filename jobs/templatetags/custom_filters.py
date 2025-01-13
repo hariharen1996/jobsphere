@@ -5,19 +5,26 @@ from django.utils.safestring import mark_safe
 
 register = template.Library()
 
+from django.utils.timesince import timesince
+from datetime import datetime
+import pytz
+
 @register.filter
 def timesince_without_hrs(value):
-    time_str = timesince(value)
-    #print(f"time: {time_str}")
-    time_sp = time_str.split()
-    #print(time_sp)
+    if isinstance(value, str):
+        value = datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+    
+    if value.tzinfo is None:
+        value = pytz.utc.localize(value) 
 
-    
-    if 'hour' in time_str:
-        time_sp = time_sp[:-2]
-    
-    #print(time_sp)
-    return ' '.join(time_sp).strip(",")
+    localtimezone = pytz.timezone('Asia/Kolkata') 
+    local_time = value.astimezone(localtimezone)
+    time = timesince(local_time)
+    splitime = time.split()
+    if 'hour' in time:
+        splitime = splitime[:-2]
+
+    return ' '.join(splitime).strip(",")
 
 
 @register.filter(name='get_reaction')

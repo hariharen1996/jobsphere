@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import api_views
 
 urlpatterns = [
     path("",views.job_home,name="job_home"),
@@ -16,5 +17,7 @@ urlpatterns = [
     path('job_application/',views.job_applications,name='job_application'),
     path('update_application_skills/<int:id>/',views.update_jobapplication_skills,name='update_application_skills'),
     path('company_reviews/<int:employer_id>/', views.company_reviews, name='company_reviews'),
+
+    path('api/dashboard-api/',api_views.dashboard,name='dashboard-api')
 ]
  
