@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from .models import Employer,Job
-from users.models import Skill
+from .models import Employer,Job,JobSkills
 
 
 
@@ -16,14 +15,14 @@ class EmployerSerializer(serializers.ModelSerializer):
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Skill
-        fields = ['name','category']
+        model = JobSkills
+        fields = ['job_skills']
 
 class JobSerializer(serializers.ModelSerializer):
     employer = EmployerSerializer()
-    job_related_skills = SkillSerializer(many=True)
     posted_time = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S')
     application_deadline = serializers.DateField(format='%Y-%m-%d')
+    skills = SkillSerializer(many=True)
 
     class Meta:
         model = Job
@@ -31,39 +30,51 @@ class JobSerializer(serializers.ModelSerializer):
             'id', 'employer', 'title', 'description', 'location', 'min_salary', 'max_salary',
             'salary_range', 'work_mode', 'role', 'experience', 'time_range', 'created_at', 
             'posted_time', 'benefits', 'application_deadline', 'job_category', 
-            'number_of_openings', 'status', 'job_related_skills'
+            'number_of_openings', 'status', 'skills'
         ]
 
 
     def create(self, validated_data):
-        employer_data = validated_data.pop('employer')
-        job_related_skills_data = validated_data.pop('job_related_skills')
-
-        employer = Employer.objects.create(**employer_data)
-        job = Job.objects.create(employer=employer,**validated_data)
-
-        for skill_data in job_related_skills_data:
-            skill = Skill.objects.get(id=skill_data['id'])
-            job.job_related_skills.add(skill)
+        job_related_skills_data = validated_data.pop('skills', [])
+        job = Job.objects.create(**validated_data)
+        job_skills = []
         
+        for skill_data in job_related_skills_data:
+            skill_name = skill_data.get('job_skills')
+            skill = JobSkills.objects.get_or_create(job_skills=skill_name)
+            job_skills.append(skill)
+
+        job.skills.set(job_skills)
+        job.save()
         return job
-    
+
+
+
     def update(self, instance, validated_data):
-        employer_data = validated_data.pop('employer')
-        job_related_skills_data = validated_data.pop('job_related_skills')
-
-        instance.employer.company_name = employer_data.get('company_name',instance.employer.company_name)
-        instance.employer.company_description = employer_data.get('company_description', instance.employer.company_description)
-        instance.employer.save()
-
+        job_related_skills_data = validated_data.pop('skills', None) 
         instance.title = validated_data.get('title', instance.title)
         instance.description = validated_data.get('description', instance.description)
         instance.location = validated_data.get('location', instance.location)
+        instance.salary_range = validated_data.get('salary_range', instance.salary_range)
+        instance.work_mode = validated_data.get('work_mode', instance.work_mode)
+        instance.role = validated_data.get('role', instance.role)
+        instance.experience = validated_data.get('experience', instance.experience)
+        instance.benefits = validated_data.get('benefits', instance.benefits)
+        instance.application_deadline = validated_data.get('application_deadline', instance.application_deadline)
+        instance.job_category = validated_data.get('job_category', instance.job_category)
+        instance.number_of_openings = validated_data.get('number_of_openings', instance.number_of_openings)
+        instance.status = validated_data.get('status', instance.status)
+        instance.posted_time = validated_data.get('posted_time', instance.posted_time)
+        
         instance.save()
 
-        instance.job_related_skills.clear()
-        for skill_data in job_related_skills_data:
-            skill = Skill.objects.get(id=skill_data['id'])
-            instance.job_related_skills.add(skill)
-        
+        if job_related_skills_data:
+            job_skills = []
+            for skill_data in job_related_skills_data:
+                skill_name = skill_data.get('job_skills') 
+                skill = JobSkills.objects.get_or_create(job_skills=skill_name) 
+                job_skills.append(skill)
+
+            instance.skills.set(job_skills)
+
         return instance

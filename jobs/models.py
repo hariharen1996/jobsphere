@@ -35,6 +35,15 @@ class Employer(models.Model):
     def __str__(self):
         return f"{self.user.username}"
     
+    
+class JobSkills(models.Model):
+    job_skills = models.CharField(max_length=200)
+
+
+    def __str__(self):
+        return self.job_skills    
+
+    
 class Job(models.Model):
     SALARY_CHOICES = (
         ('0-3','0-3 Lakhs'),
@@ -93,7 +102,8 @@ class Job(models.Model):
     job_category = models.CharField(max_length=100, blank=False, null=False,default="Development/It")
     number_of_openings = models.PositiveIntegerField(default=1)
     status = models.CharField(max_length=10, choices=JOB_STATUS_CHOICES, default='open')
-    job_related_skills =  models.ManyToManyField(Skill,related_name='job_skills')
+    skills = models.ManyToManyField(JobSkills,related_name="skills",blank=True)
+
 
     def save(self,*args,**kwargs):
         if self.salary_range == '0-3':

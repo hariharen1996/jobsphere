@@ -184,8 +184,8 @@
             <article class="mt-2">
                 <p class="">{{ result.description|truncatechars:100 }}</p>
                 <div class="skills mt-2 d-flex gap-2 flex-wrap">
-                    {% for skill in result.job_related_skills %}
-                    <p class="text-secondary">{{ skill.name }} .</p>
+                    {% for skill in result.skills %}
+                    <p class="text-secondary">{{ skill.job_skills }} .</p>
                     {% endfor %}
                 </div>
             </article>

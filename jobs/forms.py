@@ -1,8 +1,8 @@
 from django import forms
-from .models import Employer,Job,JobApplication
+from .models import Employer,Job,JobApplication,JobSkills
 from django.core.exceptions import ValidationError
 import logging 
-from users.models import Skill
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,14 +34,14 @@ class EmployeeForm(forms.ModelForm):
             return cleaned_data 
 
 class JobForm(forms.ModelForm):
-    job_related_skills = forms.ModelMultipleChoiceField(
-            queryset=Skill.objects.all(),
+    skills = forms.ModelMultipleChoiceField(
+            queryset=JobSkills.objects.all(),
             widget=forms.CheckboxSelectMultiple,
             required=True
     )    
     class Meta:
         model = Job
-        fields = ['title','description','location','salary_range','work_mode','experience','benefits','application_deadline','job_category','role','number_of_openings','status','job_related_skills']
+        fields = ['title','description','location','salary_range','work_mode','experience','benefits','application_deadline','job_category','role','number_of_openings','status','skills']
 
         widgets = {
             'application_deadline': forms.DateInput(attrs={'type':'date'}),

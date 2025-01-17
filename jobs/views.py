@@ -59,13 +59,10 @@ def dashboard(request):
 
     try:
         response = requests.get(api_url, params=params)
-        #print(response)
         response.raise_for_status() 
         api_response = response.json()  
-        #print(api_response)
         job_data = api_response.get('jobs', []) 
         job_data = sorted(job_data,key=lambda x: x['created_at'],reverse=True)
-        #print(job_data)
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data from API: {e}")
         job_data = []
@@ -80,7 +77,6 @@ def dashboard(request):
         paginator = Paginator(job_data, 5) 
 
     page_number = request.GET.get('page')
-    #print(page_number)
     try:
         page_data = paginator.get_page(page_number)
     except (EmptyPage, InvalidPage):
@@ -89,8 +85,6 @@ def dashboard(request):
     start_index = (page_data.number - 1) * paginator.per_page + 1
     end_index = start_index + len(page_data) - 1
     total_jobs = paginator.count
-    #print(start_index,end_index,total_jobs)
-
     filter_names = []
 
     if request.GET.get('search'):
@@ -175,11 +169,11 @@ def create_job(request):
             job = form.save(commit=False)
             job.employer = employer
             job.save()
-            skills = form.cleaned_data.get('job_related_skills')
+            skill = form.cleaned_data.get('skills')
 
-            if skills:
-                job.job_related_skills.set(skills) 
-
+            if skill:
+                job.skills.set(skill) 
+            print(f"skill:{skill}")
             job.save()
             return redirect('dashboard')
     else:

@@ -67,7 +67,7 @@
             <article>
                <h3 class="fw-bold mt-4">Skills</h3>
                    <ul class="skills list-group d-flex flex-row flex-wrap">
-                        {% for skill in job.job_related_skills.all %}
+                        {% for skill in job.skills.all %}
                             <li class="list-group-item m-2"><i class="fas fa-star"></i> {{ skill }}</li>
                         {% endfor %}
                     </ul>
