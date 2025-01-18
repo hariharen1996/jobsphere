@@ -7,6 +7,8 @@ from datetime import timedelta
 from django.db.models import Q 
 from django.utils import timezone 
 from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404
+
 
 @api_view(['GET'])
 def dashboard(request):
@@ -26,7 +28,7 @@ def dashboard(request):
 
     if search_query:
         data = Job.objects.filter(
-            Q(employer__company_name__icontains=search_query) | Q(location__icontains=search_query) | Q(job_related_skills__name__icontains=search_query)
+            Q(employer__company_name__icontains=search_query) | Q(location__icontains=search_query) | Q(skills__job_skills__icontains=search_query)
         ).distinct()
         filter_names.append(f'{search_query}')
         
@@ -136,3 +138,37 @@ def dashboard(request):
             'total_jobs':total_jobs,
             'filter_names':filter_names
         })
+
+
+@api_view(['POST'])
+def create_job_view(request):
+    serializer = JobSerializer(data=request.data)
+    if serializer.is_valid():
+        job = serializer.save()
+        return Response(JobSerializer(job).data, status=status.HTTP_201_CREATED)
+    else:
+         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+def update_job_view(request,job_id):
+    try:
+        job = Job.objects.get(id=job_id)
+    except Job.DoesNotExist:
+        return Response({'detail': 'Job not found'},status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = JobSerializer(job,data=request.data)
+    if serializer.is_valid():
+        job = serializer.save()
+        return Response(JobSerializer(job).data, status=status.HTTP_200_OK)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['DELETE'])
+def delete_job_view(request,job_id):
+    job = get_object_or_404(Job,id=job_id)
+
+    if request.user != job.employer.user:
+        return Response({'error': 'You do not have permission to delete this job.'}, status=403)
+    
+    job.delete()
+    return Response({'message': 'Job successfully deleted.'}, status=204)

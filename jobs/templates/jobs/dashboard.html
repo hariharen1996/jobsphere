@@ -148,17 +148,17 @@
                 </a>
            
                     <p class="fs-5 text-muted">
-                        {{ result.employer.company_name }} 
+                        {{ result.company_name }} 
                         | 
-                        <a href="{% url 'company_reviews' result.employer.id %}" class="review-link">
+                        <a href="{% url 'company-reviews' result.employer %}">
                            <button class="btn btn-primary main-btn"><i class="fas fa-comments"></i></button> 
-                        </a>
+                        </a>   
                     </p>
                     
                     
                 </div>
                 
-                <img src="{{ result.employer.company_logo }}" alt="{{ result.employer.company_name }} Logo" 
+                <img src="{{ result.company_logo }}" alt="{{ result.company_name }} Logo" 
                      class="company-logo ms-auto" />
             </header>
             
