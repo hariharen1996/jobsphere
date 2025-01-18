@@ -32,19 +32,19 @@ def dashboard(request):
             profile = request.user.profile
             if not profile.is_complete():
                 messages.warning(request,f"Please complete your profile to access the dashboard")
-                return redirect('job_home')
+                return redirect('job-home')
         else:
             messages.warning(request, "Please complete your profile to access the dashboard")
-            return redirect('job_home')
+            return redirect('job-home')
     elif request.user.user_type == 'Recruiter':
         if hasattr(request.user,'employer'):
             employer = request.user.employer
             if not employer.is_complete():
                 messages.warning(request,f"Please complete your profile to access the dashboard")
-                return redirect('job_home')
+                return redirect('job-home')
         else:
             messages.warning(request, "Please create your employer profile to access the dashboard")
-            return redirect('job_home')    
+            return redirect('job-home')    
 
     api_url = "http://127.0.0.1:8000/api/dashboard/"
     params = {
@@ -138,7 +138,7 @@ def dashboard(request):
 @login_required
 def create_employee(request):
     if request.user.user_type == 'Applicant':
-        return redirect('job_home')
+        return redirect('job-home')
 
     if request.method == 'POST':
         form = EmployeeForm(request.POST,request.FILES,instance=request.user.employer if hasattr(request.user,'employer') else None)
@@ -155,11 +155,11 @@ def create_employee(request):
 @login_required
 def create_job(request):
     if request.user.user_type == 'Applicant':
-        return redirect('job_home')
+        return redirect('job-home')
 
     if not Employer.objects.filter(user=request.user).exists():
         messages.warning(request, "You need to create an employer profile before posting jobs.")
-        return redirect('job_home')
+        return redirect('job-home')
 
     if request.method == 'POST':
         form = JobForm(request.POST)
@@ -224,13 +224,13 @@ def create_job(request):
 @login_required
 def update_job(request, job_id):
     if request.user.user_type == 'Applicant':
-        return redirect('job_home')
+        return redirect('job-home')
 
     try:
         job = Job.objects.get(id=job_id)
     except Job.DoesNotExist:
         messages.error(request, "Job not found.")
-        return redirect('job_home')
+        return redirect('job-home')
 
     if job.employer.user != request.user: 
         messages.warning(request, "You don't have permission to edit this job.")
@@ -296,7 +296,7 @@ def delete_job(request,job_id):
     job = get_object_or_404(Job,id=job_id)
 
     if request.user != job.employer.user:
-        messages.error(request, 'You are not allowed to delete this job.')
+        messages.warning(request, "You don't have permission to delete this job")
         return redirect('dashboard')
 
     jwt_access_token = request.COOKIES.get('access_token')
@@ -309,12 +309,17 @@ def delete_job(request,job_id):
     }
 
     api_url = f'http://127.0.0.1:8000/api/delete/{job.id}/'
+    print("JWT Access Token:", jwt_access_token)
 
     try:
         response = requests.delete(api_url, headers=headers)
 
         if response.status_code == 204:
             messages.success(request, "Job deleted successfully!")
+        elif response.status_code == 403:
+            messages.error(request,"You do not have permissions to delete this job!")
+        elif response.status_code == 404:
+            messages.error(request,"Job not found!")    
         else:
             messages.error(request, f"There was an error deleting the job: {response.text}")
 
@@ -422,7 +427,7 @@ def export_jobdata_excel(request):
             'Job Category': jobs.job_category,
             'Openings': jobs.number_of_openings,
             'status': jobs.status,
-            'skills': ", ".join([skill.name for skill in jobs.job_related_skills.all()]),
+            'skills': ", ".join([skill.job_skills for skill in jobs.skills.all()]),
             'employer_name': employer_name,
             'employer_email': employer_email,
             'employer_contact':employer_contact,
@@ -453,7 +458,7 @@ def export_jobdata_excel(request):
 def apply_jobs(request,job_id):
     if not request.user.is_authenticated:  
         messages.error(request,"You need to be logged in to apply for job")
-        return redirect('job_home')
+        return redirect('job-home')
     
     job = get_object_or_404(Job,id=job_id)
     profile = get_object_or_404(Profile,user=request.user)
@@ -568,7 +573,7 @@ def company_reviews(request, employer_id):
                     rate_review=rating
                 )
                 messages.success(request, "Your review has been posted!")
-                return redirect('company_reviews', employer_id=employer_id)
+                return redirect('company-reviews', employer_id=employer_id)
 
         elif 'reply_comment' in request.POST:
             comment_id = int(request.POST.get('comment_id'))
@@ -578,17 +583,17 @@ def company_reviews(request, employer_id):
             comment = get_object_or_404(Review, id=comment_id)
             if comment.applicant == request.user:
                 messages.warning(request, "You cannot reply to your own review.")
-                return redirect('company_reviews', employer_id=employer.id)
+                return redirect('company-reviews', employer_id=employer.id)
 
             if request.user != comment.employer.user and request.user.user_type == 'Recruiter':
                 messages.warning(request, "You can only reply to reviews for your own company.")
-                return redirect('company_reviews', employer_id=employer.id)
+                return redirect('company-reviews', employer_id=employer.id)
 
             if parent_reply_id:
                 parent_reply = get_object_or_404(Reply, id=parent_reply_id)
                 if parent_reply.user == request.user:
                     messages.warning(request, "You cannot reply to your own reply.")
-                    return redirect('company_reviews', employer_id=employer.id)
+                    return redirect('company-reviews', employer_id=employer.id)
             else:
                 parent_reply = None  
 
@@ -600,7 +605,7 @@ def company_reviews(request, employer_id):
                     content=content
                 )
                 messages.success(request, "Your reply has been posted!")
-                return redirect('company_reviews', employer_id=employer.id)
+                return redirect('company-reviews', employer_id=employer.id)
 
         elif 'like_reply' in request.POST or 'dislike_reply' in request.POST:
             reply_id = int(request.POST.get('reply_id'))
@@ -610,7 +615,7 @@ def company_reviews(request, employer_id):
             if request.user.user_type == 'Recruiter':
                 if reply.comment.employer != request.user.employer:
                     messages.warning(request, "You can only react to replies for your own company.")
-                    return redirect('company_reviews', employer_id=employer.id)
+                    return redirect('company-reviews', employer_id=employer.id)
 
             user_reaction = reply.get_users_reaction(request.user)
 
@@ -684,16 +689,16 @@ def company_reviews(request, employer_id):
 
             if review.applicant != request.user:
                 messages.error(request,'You can only edit your own reviews!')
-                return redirect('company_reviews',employer_id=employer_id)
+                return redirect('company-reviews',employer_id=employer_id)
 
             if not content:
                 messages.error(request,f"Review cannot be empty")
-                return redirect('company_reviews',employer_id=employer_id)
+                return redirect('company-reviews',employer_id=employer_id)
 
             review.content = content
             review.save()
             messages.success(request,"You review has been updated!")
-            return redirect('company_reviews',employer_id=employer_id)
+            return redirect('company-reviews',employer_id=employer_id)
 
         elif 'edit_reply' in request.POST:
             reply_id = int(request.POST.get('reply_id'))
@@ -702,16 +707,16 @@ def company_reviews(request, employer_id):
 
             if reply.user != request.user:
                 messages.error(request, 'You can only edit your own replies!')
-                return redirect('company_reviews', employer_id=employer_id)
+                return redirect('company-reviews', employer_id=employer_id)
 
             if not content:
                 messages.error(request, 'Reply cannot be empty!')
-                return redirect('company_reviews', employer_id=employer_id)
+                return redirect('company-reviews', employer_id=employer_id)
 
             reply.content = content
             reply.save()
             messages.success(request, 'Your reply has been updated!')
-            return redirect('company_reviews', employer_id=employer_id)
+            return redirect('company-reviews', employer_id=employer_id)
 
         elif 'edit_nested_reply' in request.POST:
             nested_reply_id = int(request.POST.get('nested_reply_id'))
@@ -720,16 +725,16 @@ def company_reviews(request, employer_id):
 
             if nested_reply.user != request.user:
                 messages.error(request, 'You can only edit your own nested replies!')
-                return redirect('company_reviews', employer_id=employer_id)
+                return redirect('company-reviews', employer_id=employer_id)
 
             if not content:
                 messages.error(request, 'Reply cannot be empty!')
-                return redirect('company_reviews', employer_id=employer_id)
+                return redirect('company-reviews', employer_id=employer_id)
 
             nested_reply.content = content
             nested_reply.save()
             messages.success(request, 'Your nested reply has been updated!')
-            return redirect('company_reviews', employer_id=employer_id)
+            return redirect('company-reviews', employer_id=employer_id)
         
         elif 'delete_review' in request.POST:
             review_id = int(request.POST.get('review_id'))
@@ -741,7 +746,7 @@ def company_reviews(request, employer_id):
                 review.delete()
                 messages.success(request, 'Your review has been deleted!')
 
-            return redirect('company_reviews', employer_id=employer.id)
+            return redirect('company-reviews', employer_id=employer.id)
 
         elif 'delete_reply' in request.POST:
             reply_id = int(request.POST.get('reply_id'))
@@ -753,7 +758,7 @@ def company_reviews(request, employer_id):
                 reply.delete()
                 messages.success(request, 'Your reply has been deleted!')
 
-            return redirect('company_reviews', employer_id=employer.id)
+            return redirect('company-reviews', employer_id=employer.id)
 
         elif 'delete_nested_reply' in request.POST:
             nested_reply_id = int(request.POST.get('nested_reply_id'))
@@ -765,7 +770,7 @@ def company_reviews(request, employer_id):
                 nested_reply.delete()
                 messages.success(request, 'Your nested reply has been deleted!')
 
-            return redirect('company_reviews', employer_id=employer.id)
+            return redirect('company-reviews', employer_id=employer.id)
 
     range_of_values = range(1,6)
     context = {

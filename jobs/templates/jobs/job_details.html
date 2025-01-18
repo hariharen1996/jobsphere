@@ -43,7 +43,7 @@
         </article>
     {% if user.user_type == 'Applicant' %}    
         <article class="apply-jobs-container mt-3">
-            <a href="{% url 'apply_jobs' job.id %}">
+            <a href="{% url 'apply-jobs' job.id %}">
                 <button class="btn btn-primary main-btn">Apply <i class="far fa-paper-plane"></i> </button>
             </a>
         </article>  

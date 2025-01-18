@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Job
@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.utils import timezone 
 from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(['GET'])
@@ -141,6 +142,7 @@ def dashboard(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def create_job_view(request):
     serializer = JobSerializer(data=request.data)
     if serializer.is_valid():
@@ -150,6 +152,7 @@ def create_job_view(request):
          return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def update_job_view(request,job_id):
     try:
         job = Job.objects.get(id=job_id)
@@ -164,6 +167,7 @@ def update_job_view(request,job_id):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
 def delete_job_view(request,job_id):
     job = get_object_or_404(Job,id=job_id)
 

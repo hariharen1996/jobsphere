@@ -12,7 +12,7 @@
             {% csrf_token %}
             {{ form|crispy }}
             <button type="submit" class="btn btn-primary main-btn">
-                {% if form.instance.pk %}Edit {% else %} Create {% endif %}
+                <i class="fas fa-user-edit"></i>  {% if form.instance.pk %}Edit {% else %} Create {% endif %}
             </button>
         </form>
     </div>
