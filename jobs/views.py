@@ -542,7 +542,7 @@ def update_jobapplication_skills(request,id):
         if form.is_valid():
             form.save()
             messages.success(request,"Your skills have been updated successfully")
-            return redirect('job_application')
+            return redirect('job-application')
     else:
         form = UpdateJobApplicationForm(instance=job_application)
     

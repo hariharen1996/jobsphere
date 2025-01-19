@@ -52,7 +52,7 @@
                     <td class="text-nowrap">{{ application.job.employer.company_name }}</td>
                     <td class="text-nowrap">{{ application.job.location }}</td>
                     <td class="text-nowrap">
-                        {% for skill in application.job.job_related_skills.all %}
+                        {% for skill in application.job.skills.all %}
                             <span>{{ skill }} |</span>
                         {% empty %}
                             <p>No Skills Available</p>
@@ -80,7 +80,7 @@
                     <td class="text-nowrap">{{ application.applied_at }}</td>
                 {% if user.user_type == 'Applicant' %}   
                     <td class="text-nowrap">
-                        <a href="{% url 'update_application_skills' id=application.id %}" class="btn btn-outline-primary btn-sm">
+                        <a href="{% url 'update-application-skills' id=application.id %}" class="btn btn-outline-primary btn-sm">
                             Add|update Skills
                         </a>
                     </td>
