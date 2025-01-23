@@ -11,14 +11,14 @@ from .mixins import RedirectAuthenticatedUserMixin
 # Create your views here.
 def user_login(request):
     if request.user.is_authenticated:
-        return redirect('job_home')        
+        return redirect('job-home')        
     form = LoginForm()
     return render(request,'users/login.html',{'title': 'LoginPage','form':form})
 
 
 def user_register(request):
     if request.user.is_authenticated:
-        return redirect('job_home')
+        return redirect('job-home')
     form = CustomUserForm()
     return render(request,'users/register.html',{'title': 'RegisterPage','form':form})
 
@@ -30,7 +30,7 @@ def user_logout(request):
 def user_profile(request):
 
     if request.user.user_type == 'Recruiter':
-        return redirect('job_home')
+        return redirect('job-home')
 
     if request.method == 'POST':
         user_form = CustomUserUpdateForm(request.POST,instance=request.user)

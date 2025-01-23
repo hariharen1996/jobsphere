@@ -106,7 +106,7 @@ def dashboard(request):
 
 
     
-    roles = ['Software Development', 'Software Tester', 'Devops', 'Machine Learning', 'Business Development']
+    roles = ['Software Development', 'Software Testing', 'Devops', 'Machine Learning', 'Business Development']
     locations = ['all', 'chennai', 'bengaluru', 'coimbatore', 'madurai', 'delhi', 'hyderabad']
     salaries = [('0-3', '0-3 Lakhs'), ('3-6', '3-6 Lakhs'), ('6-10', '6-10 Lakhs'), ('10-15', '10-15 Lakhs'), ('15-20', '15-20 Lakhs'), ('20+', '20+ Lakhs')]
 
